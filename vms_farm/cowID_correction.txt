@@ -1,0 +1,25 @@
+README
+
+Collection date: 2023-11-17
+Farm: Laufenberg
+Milking parlour: VMS (two left and two right)
+
+Collection staff:
+-Luara
+-Guilherme 
+-Maria
+-Jalysssa
+
+There is a folder for each computer used for video collcetion
+All the videos here have the original names
+-Lab's pink laptop -> 20231117_lab.zip
+-Maria's laptop -> 20231117_maria.zip
+-Guilherme's laptop -> 20231117_guilherme.zip
+
+Note: cow IDs were verified by time and robot with the delpro report
+These file names were modified to have the correct cow ID
+original cow ID -> corrected cow ID
+-1332 -> 1432
+-1179 -> 1279
+-732 -> 723
+-904 -> 1274
