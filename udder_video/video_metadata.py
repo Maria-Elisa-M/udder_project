@@ -1,4 +1,4 @@
-mport pandas as pd
+import pandas as pd
 import os
 import datetime
 
@@ -10,7 +10,7 @@ outpath = os.path.join(path, "video_metadata")
 # videos 1: Marias computer -vms 3 and 4 right side
 # videos 2: Ghuilhermes computer -vms 1 and 2 left side mostly*
 # videos 3: Labs computer -vms 1 and 2 left side
-computer_dict = {"videos_1": "maria", "guilherme": "left", "videos_3": "lab"}
+computer_dict = {"videos_1": "maria", "videos_2":"guilherme", "videos_3": "lab"}
 robotside_dict = {"videos_1": "right", "videos_2": "left", "videos_3": "left"}
 timedelta_dict = {"videos_1": 2, "videos_2": 0, "videos_3": 2}
 farmname ="laufenberg"
