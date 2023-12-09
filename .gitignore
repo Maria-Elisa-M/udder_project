@@ -7,3 +7,6 @@
 
 # ignore bag files
 *.bag
+
+# ignore arrays
+*.npy
