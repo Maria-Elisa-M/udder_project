@@ -1,1 +1,1 @@
-# MAin task is to divide the uder into quarters
+# Main task is to divide the uder into quarters
