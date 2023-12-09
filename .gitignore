@@ -1,3 +1,9 @@
 #ignore python checkpoints
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
+
+# ignote tif files
+*.tif
+
+# ignore bag files
+*.bag
