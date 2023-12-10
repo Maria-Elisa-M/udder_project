@@ -14,7 +14,7 @@ for cow in cow_dirs:
     files =  [file.replace(".tif", "") for file in os.listdir(cow_path)]
     img_list.extend(files)
 
-unlabeled_img = list(set(img_list).difference(set(label_list)))
+unlabeled_img = sorted(list(set(img_list).difference(set(label_list))))
 todo_imgs = len(unlabeled_img)
 
 def save_class(label, dst):
@@ -29,7 +29,7 @@ print(f'There are: {todo_imgs} images to annotate\n')
 close = False
 for img_num in list(range(todo_imgs)):
     window_name = 'image_' + str(img_num+1) +' _from_' + str(todo_imgs)
-    image_name = img_list[img_num]
+    image_name = unlabeled_img[img_num]
     cow_dir = os.path.join(image_path, image_name.split("_")[0])
     # image path is cow ID + image name
     src = os.path.join(cow_dir, image_name + ".tif")
