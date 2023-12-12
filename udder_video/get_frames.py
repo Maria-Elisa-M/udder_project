@@ -44,7 +44,7 @@ def get_depth_frame(filepath, filename, outpath, outpath2, outpath3):
             
     except RuntimeError:
         cow = str(int(filename.split("_")[0]))
-        video = filename.split("_")[1]
+        video = filename.split("_")[1:3]
         arraypath = os.path.join(outpath1, cow)
         colorpath = os.path.join(outpath2, cow)
         depthpath = os.path.join(outpath3, cow)
