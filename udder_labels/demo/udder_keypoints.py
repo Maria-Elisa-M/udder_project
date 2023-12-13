@@ -57,7 +57,7 @@ for img_num in list(range(todo_imgs)):
     skips = []
     window_name = 'image_' + str(img_num+1) +' _from_' + str(todo_imgs)
     image_name = unlabeled_img[img_num]
-    src = os.path.join(image_path, image_name +".png")
+    src = os.path.join(image_path, image_name +".tif")
     img = cv2.imread(src)
     clone = img.copy()
     cv2.namedWindow(window_name)

@@ -1,12 +1,10 @@
-cow = "842";
-
 % define directories
 currentFolder = pwd;
-image_path = strcat(currentFolder, '\frames'+ cow);
+image_path = strcat(currentFolder, '\frames');
 label_path = strcat(currentFolder,'\labels\segments');
 box_path = strcat(currentFolder,'\labels\bbox');
 
-img_list = split({dir(fullfile(image_path, '*.png')).name}.', ".");
+img_list = split({dir(fullfile(image_path, '*.tif')).name}.', ".");
 label_list = split({dir(fullfile(label_path, '*.txt')).name}.', ".");
 
 if size(label_list, 1)>0
@@ -21,7 +19,7 @@ for num_img = 1:length(unlabeled_img)
 
     % read depth image
     source_name = unlabeled_img(num_img);
-    origA = imread(fullfile(image_path, source_name + ".png"));
+    origA = imread(fullfile(image_path, source_name + ".tif"));
 
     % get image size
     im_size = size(origA);
