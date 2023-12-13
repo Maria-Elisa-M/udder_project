@@ -1,7 +1,8 @@
+cow = "842";
 
 % define directories
 currentFolder = pwd;
-image_path = strcat(currentFolder, '\frames');
+image_path = strcat(currentFolder, '\frames'+ cow);
 label_path = strcat(currentFolder,'\labels\segments');
 box_path = strcat(currentFolder,'\labels\bbox');
 
