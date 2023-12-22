@@ -1,0 +1,7 @@
+# Data
+train: C:\Users\Maria\Documents\udder_project_3\segement\dataset\images\train # train images 
+val: C:\Users\Maria\Documents\udder_project_3\segement\dataset\images\val  # val images 
+
+# Classes
+names:
+  0: udder
