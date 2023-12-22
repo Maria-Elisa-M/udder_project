@@ -1,0 +1,12 @@
+# Data
+train: data\\train  # train images 
+val: data\\val  # val images 
+
+# Classes
+names:
+  0: bad
+  1: good
+
+# Hyperparameters
+degrees: 180.0  # image rotation (+/- deg)
+scale: 0.5 # image scale 
