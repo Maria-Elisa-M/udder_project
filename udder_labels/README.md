@@ -8,9 +8,12 @@ Labeling script
 ### Examples
 <table>
   <tr>
-    <th><img src = "examples/kp_example_01.png" width = 300></th>
-    <th><img src = "examples/kp_example_07.png" width = 300></th>
-    <th><img src = "examples/kp_example_05.png" width = 300></th>
+    <th>Good</th>
+    <th>Bad</th>
+  </tr>
+  <tr>
+    <td><img src = "examples/kp_example_01.png" width = 300></th>
+    <td><img src = "examples/kp_example_07.png" width = 300></th>
   </tr>
 </table>
 
