@@ -1,1 +1,19 @@
-![example 01](examples/kp_example_01.png)
+The frames of 50 cows 25 from each computer (Guilherme, Maria) were labeled for class, segment, and keypoints. 
+
+# Class
+0: bad
+1: good
+
+Labeling script
+## Examples
+
+# Segments
+
+Labeling script
+## Examples 
+
+# Keypoints
+
+Labeling script
+## Examples
+<img src = "examples/kp_example_01.png" width = 300>
