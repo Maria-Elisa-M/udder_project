@@ -35,7 +35,7 @@ def get_depth_frame(filepath, filename, outpath, outpath2, outpath3):
             depth_color_frame = colorizer.colorize(depth_frame)
             if i == 0:
                 color_array = np.empty((nframes, np.array(depth_color_frame.get_data()).shape[0], np.array(depth_color_frame.get_data()).shape[1], 3), dtype= "uint8")
-                depth_array = np.empty((nframes, np.array(depth_frame.get_data()).shape[0], np.array(depth_frame.get_data()).shape[1]), dtype= "uint8")
+                depth_array = np.empty((nframes, np.array(depth_frame.get_data()).shape[0], np.array(depth_frame.get_data()).shape[1]), dtype= "uint16")
                 
             color_array[i] = np.expand_dims(np.array(depth_color_frame.get_data()), axis=0)
             depth_array[i] = np.expand_dims(np.array(depth_frame.get_data()), axis=0)   
@@ -44,7 +44,7 @@ def get_depth_frame(filepath, filename, outpath, outpath2, outpath3):
             
     except RuntimeError:
         cow = str(int(filename.split("_")[0]))
-        video = filename.split("_")[1:3]
+        video = "_".join(filename.split("_")[1:3])
         arraypath = os.path.join(outpath1, cow)
         colorpath = os.path.join(outpath2, cow)
         depthpath = os.path.join(outpath3, cow)
