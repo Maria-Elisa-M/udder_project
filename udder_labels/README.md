@@ -16,4 +16,6 @@ Labeling script
 
 Labeling script
 ## Examples
-<img src = "examples/kp_example_01.png" width = 300>
+||||
+|---|---|---|
+|<img src = "examples/kp_example_01.png" width = 300>|<img src = "examples/kp_example_02.png" width = 300>|<img src = "examples/kp_example_02.png" width = 300>|
