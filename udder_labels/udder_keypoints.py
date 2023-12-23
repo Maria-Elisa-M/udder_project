@@ -7,7 +7,7 @@ box_path = os.path.join(os.getcwd(), r'labels\bbox')
 label_path = os.path.join(os.getcwd(), r'labels\keypoints') 
 
 # list of images
-img_list = [file.replace(".txt", "") for file in  os.listdir(box_path)]
+img_list = [file.replace(".tif", "") for file in  os.listdir(image_path)]
 # list of annotated images
 label_list = [file.replace(".txt", "") for file in  os.listdir(label_path)]
 # images to annotate
@@ -40,7 +40,7 @@ def save_points(img_name, refPt):
     file_name = os.path.join(label_path, img_name+ ".txt")
     bbox_name =  os.path.join(box_path, img_name+ ".txt")
     with open(bbox_name, "r") as f:
-        bbox = f.read()
+        bbox = f.read().replace("\n", "")
         
     refPt_long = [str(pt) for p in refPt for pt in p]
     annotation = " ".join(refPt_long)
@@ -57,7 +57,7 @@ for img_num in list(range(todo_imgs)):
     skips = []
     window_name = 'image_' + str(img_num+1) +' _from_' + str(todo_imgs)
     image_name = unlabeled_img[img_num]
-    src = os.path.join(image_path, image_name +".png")
+    src = os.path.join(image_path, image_name +".tif")
     img = cv2.imread(src)
     clone = img.copy()
     cv2.namedWindow(window_name)
