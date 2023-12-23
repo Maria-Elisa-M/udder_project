@@ -2,8 +2,10 @@
 The frames of 50 cows 25 from each computer (Guilherme, Maria) were labeled for class, segment, and keypoints. 
 
 ## Class
-0: bad
-1: good
+<ul>
+  <li>0: bad</li>
+  <li>1: good</li>
+</ul>
 Labeling script
 ### Examples
 <table>
