@@ -6,7 +6,8 @@ The frames of 50 cows 25 from each computer (Guilherme, Maria) were labeled for 
   <li>0: bad</li>
   <li>1: good</li>
 </ul>
-Labeling script
+Labeling script: <a href="udder_frame_class.py">udder_frame_class.py</a>
+
 ### Examples
 <table>
   <tr>
@@ -20,7 +21,8 @@ Labeling script
 </table>
 
 ## Segments
-Labeling script
+Labeling script: <a href="udder_segments.m">udder_segments.m</a>
+
 ### Examples 
 <table>
   <tr>
