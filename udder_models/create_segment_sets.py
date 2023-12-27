@@ -13,8 +13,8 @@ oldimg_dir = os.path.join(os.path.normpath(dirpath + os.sep + os.pardir), r'udde
 newlbl_dir = os.path.join(os.path.normpath(dirpath + os.sep + os.pardir), r'udder_labels\labels\segments')
 oldlbl_dir = os.path.join(os.path.normpath(dirpath + os.sep + os.pardir), r'udder_dcc\labels\segments')
 
-data_imdir = os.path.join(dirpath, r"dataset\images")
-data_lbldir = os.path.join(dirpath, r"dataset\labels")
+data_imdir = os.path.join(dirpath, r"udder_segment\dataset\images")
+data_lbldir = os.path.join(dirpath, r"udder_segment\dataset\labels")
 
 # data collection groups
 imgdir_dict = {20210625:{"lab": oldimg_dir}, \
