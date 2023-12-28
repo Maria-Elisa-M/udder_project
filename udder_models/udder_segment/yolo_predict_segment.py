@@ -69,7 +69,11 @@ for file in image_list:
     
     inte_union = intersection/union
     pred_df.loc[pred_df.filename == file, "intersection_union"] = inte_union
+
+#%%
+pred_df2 = pred_df["intersection_union"].agg(["mean", "min", "max", "median"]).reset_index().rename(columns = {"index": "metrics"})
+
     
-    
-    
+pred_df2.to_csv("segment_test_intersection_union.csv", index = False) 
+pred_df.to_csv("segment_test_predictions.csv", index = False)  
     
