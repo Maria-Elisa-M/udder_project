@@ -1,4 +1,4 @@
 # Udder processing
 
-<img src = "diagram_udder.png" width = 600>
+<img src = "diagram_udder.png" width = 300>
 
