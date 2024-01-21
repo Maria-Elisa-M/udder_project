@@ -15,7 +15,7 @@ array_path = "arrays"
 file_list = os.listdir(array_path)
 
 # for file in list  read content
-for file in file_list:
+for file in file_list[45:]:
     cow = file.split("_")[0]
     src = os.path.join(array_path, file)
     depth_array = np.load(src, mmap_mode="r")

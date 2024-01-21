@@ -12,10 +12,11 @@ from skimage.restoration import inpaint
 
 
 def area_ratio(labels):
-    values = np.max(labels)
+    values = np.unique(labels)
+    values = values[values!=0]
     areas = []
-    for value in range(values):
-        area = len(labels[labels==value+1])
+    for value in values:
+        area = len(labels[labels==value])
         areas.append(area)
     return max(areas)/min(areas)
 
