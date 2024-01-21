@@ -1,0 +1,10 @@
+# Data
+train: C:\Users\Maria\Documents\udder_project_3\keypoints\dataset\images\train # train images 
+val: C:\Users\Maria\Documents\udder_project_3\keypoints\dataset\images\val  # val images 
+
+# Keypoints
+kpt_shape: [4, 3]  # [number of keypoints, number of dim]
+
+# Classes
+names:
+  0: udder
