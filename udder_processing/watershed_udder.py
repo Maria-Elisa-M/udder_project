@@ -9,7 +9,7 @@ from skimage.segmentation import watershed
 from skimage.feature import peak_local_max
 from skimage.transform import rescale, resize, downscale_local_mean
 from skimage.restoration import inpaint
-
+from skimage.measure import find_contours
 
 def area_ratio(labels):
     values = np.unique(labels)
@@ -129,3 +129,32 @@ def watershed_labels(points2, udder, dil_factor = 30, ratio_limit = 4, iter_limi
         num_segments = np.max(labels2)
         cnt+= 1
     return labels
+
+def find_correspondence(points, labels):
+    lf_point = shapely.Point(points[0, :2])
+    rf_point = shapely.Point(points[1, :2])
+    lb_point = shapely.Point(points[2, :2])
+    rb_point = shapely.Point(points[3, :2])
+
+    point_dict = {"lf": lf_point, "rf": rf_point, "lb": lb_point, "rb": rb_point}
+    quarter_dict ={}
+
+    values = np.unique(labels)
+    values = values[values!=0]
+    for value in values:
+        labels2 = labels.copy()
+        labels2[labels2 != value] =0
+        labels2[labels2 > 0] = 1
+        contour = find_contours(labels2)[0]
+        polygon = [[coord[1], coord[0]] for coord in contour]
+        quarter_shp = shapely.Polygon(polygon)
+        quarter_dict[value] = quarter_shp
+        
+    correspondence_dict = {}
+    for name in point_dict.keys():
+        pt = point_dict[name]
+        for key, quarter in quarter_dict.items():
+            if quarter.contains(pt):
+                correspondence_dict[name] = key
+    
+    return correspondence_dict

@@ -10,6 +10,7 @@ kp_dir = os.path.join(label_dir, r"keypoints")
 sg_dir = os.path.join(label_dir, r"segments")
 im_dir = os.path.join(os.path.normpath(dirpath + os.sep + os.pardir), r"udder_video\depth_images")
 out_dir = r"validate_watershed\watershed_segments"
+out_dir2 = r"validate_watershed\watershed_correspondence"
 filenames = [file.replace(".txt", ".tif") for file in os.listdir(kp_dir)]
 
 cnt = 0
@@ -40,6 +41,9 @@ for file in filenames:
 
     labels = wu.watershed_labels(points2, udder)
     np.save(os.path.join(out_dir, out_name), labels)
+    
+    temp = pd.DataFrame(find_correspondence(points2, labels), index = [0])
+    temp.to_csv(os.path.join(out_dir2, file.replace(".tif", ".csv")), index = False)
     
     print(f"{cnt}: {file}")
     cnt +=1
