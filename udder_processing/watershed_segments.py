@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy import ndimage as ndi
 import os
 import watershed_udder as wu
+import pandas as pd
 
 dirpath = os.getcwd()
 label_dir = os.path.join(dirpath, r"validate_watershed\pred_labels")
@@ -42,7 +43,7 @@ for file in filenames:
     labels = wu.watershed_labels(points2, udder)
     np.save(os.path.join(out_dir, out_name), labels)
     
-    temp = pd.DataFrame(find_correspondence(points2, labels), index = [0])
+    temp = pd.DataFrame(wu.find_correspondence(points2, labels), index = [0])
     temp.to_csv(os.path.join(out_dir2, file.replace(".tif", ".csv")), index = False)
     
     print(f"{cnt}: {file}")
