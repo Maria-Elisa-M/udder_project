@@ -5,6 +5,7 @@ import os
 import watershed_udder as wu
 from PIL import Image
 from skimage import exposure
+import pandas as pd
 
 def mk_dir(dirpath):
     if not os.path.exists(dirpath):
@@ -25,7 +26,10 @@ dirpath = os.getcwd()
 label_dir = r"validate_watershed\watershed_segments"
 im_dir = os.path.join(os.path.normpath(dirpath + os.sep + os.pardir), r"udder_video\depth_images")
 out_dir = r"validate_watershed\watershed_examples"
-file_list = os.listdir(label_dir)
+# file_list = os.listdir(label_dir)
+df = pd.read_csv(r"validate_watershed\survey_groups.csv")
+file_list = [file + ".npy" for file in df.filename]
+
 
 cnt = 0
 for file in file_list:
@@ -45,7 +49,7 @@ for file in file_list:
     ax1.imshow(img2, cmap='gray')
     out_path = os.path.join(out_dir,cow)
     mk_dir(out_path)
-    fig.savefig(os.path.join(out_path, img_file.replace("npy", "png")), transparent = True)
+    fig.savefig(os.path.join(out_path, file.replace("npy", "png")), transparent = True)
     plt.close(fig)
 
     print(f"{cnt}: {file}")

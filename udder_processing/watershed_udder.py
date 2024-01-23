@@ -42,14 +42,14 @@ def sep_points(right_kp, left_kp, udder_shp, box, limit = 10):
         nrb_point = [right_kp[0] + 10*np.cos(-k*angle), right_kp[1] + 10*np.sin(-k*angle)]
         nlb_point = [left_kp[0] - 10*np.cos(-k*angle), left_kp[1] - 10*np.sin(-k*angle)]
         # make sure they are still inside the udder
-        if (udder_shp.contains(shapely.Point(nrb_point))): # & (nrb_point[0]>0) & (nrb_point[0] <= im_width) & (nrb_point[1]>0) & (nrb_point[1] <= im_height):
+        if (udder_shp.contains(shapely.Point(nrb_point))):
             # update points 
             right_kp = np.array(nrb_point)
-        if (udder_shp.contains(shapely.Point(nlb_point))):# & (nlb_point[0]>0) & (nlb_point[0] <= im_width) & (nlb_point[1]>0) & (nlb_point[1] <= im_height):
+        if (udder_shp.contains(shapely.Point(nlb_point))):
             left_kp = np.array(nlb_point)
         wdist = np.linalg.norm(right_kp-left_kp)
         cnt += 1
-    return (np.floor(right_kp).astype(int), np.floor(left_kp).astype(int))
+    return (np.floor(left_kp).astype(int), np.floor(right_kp).astype(int))
 
 class udder_object:
     def __init__(self, file, img_dir, label_dir, array = 0):
@@ -99,8 +99,13 @@ class udder_object:
         return shapely.Polygon(polygon2)
     
 def watershed_labels(points2, udder, dil_factor = 30, ratio_limit = 4, iter_limit = 10):
+    miss_mask = udder.img.copy()
+    miss_mask[: :] = 0
+    miss_mask[udder == 0] = 1
+    inp_udder = inpaint.inpaint_biharmonic(udder.img, miss_mask)
+        
     udder_mask = udder.get_mask()
-    masked_udder = udder.img*udder_mask
+    masked_udder = inp_udder*udder_mask
     mask1 = np.zeros(udder.size)
     # marker locations
     mask1[points2[0, 1], points2[0,0]] = True
