@@ -46,3 +46,8 @@ videos_1/
 
 videos_2/
 855_20231117_170701.bag
+
+
+# later for prediction this video was also ignored (produced an error)
+videos_1/
+1489_20231117_165935.bag
