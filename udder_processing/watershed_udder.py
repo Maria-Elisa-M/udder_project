@@ -10,6 +10,9 @@ from skimage.feature import peak_local_max
 from skimage.transform import rescale, resize, downscale_local_mean
 from skimage.restoration import inpaint
 from skimage.measure import find_contours
+from astropy.convolution import Gaussian2DKernel, convolve,interpolate_replace_nans
+from shapely import LineString, MultiPoint, Polygon
+from skimage.transform import rotate
 
 def area_ratio(labels):
     values = np.unique(labels)
@@ -163,3 +166,102 @@ def find_correspondence(points, labels):
                 correspondence_dict[name] = key
     
     return correspondence_dict
+
+# udder lines functions
+
+# get the angle btween kp
+def get_angle(right_kp, left_kp):
+    angle = np.arctan2(right_kp[1]-left_kp[1], right_kp[0]-left_kp[0])
+    return angle
+# get the center between kp
+def get_center(right_kp, left_kp):
+    return shapely.centroid(MultiPoint([right_kp, left_kp])).coords[0] 
+# udder orienttion in image
+def get_orientation(right_kp, left_kp):
+    if right_kp[0] < left_kp[0]:
+        orientation = -1 # up 
+    else: 
+        orientation = 1 # down
+    return orientation
+# rotate the udder so that kp are side by side
+def rotate_udder(udder, right_kp, left_kp):
+    k = get_orientation(right_kp, left_kp)
+    center = get_center(right_kp, left_kp)
+    angle = get_angle(right_kp, left_kp)
+    rotated_udder = rotate(udder, np.rad2deg(k*angle), center = center, preserve_range = True)
+    return rotated_udder
+# rotate the kp 
+def rotate_points(right_kp, left_kp):
+    k = get_orientation(right_kp, left_kp)
+    points = np.concatenate([[right_kp], [left_kp]])
+    points2 = points.copy()
+    angle = get_angle(right_kp, left_kp)
+    center = get_center(right_kp, left_kp)
+    rot_mat = np.array([[np.cos(-k*angle), -np.sin(-k*angle)], [np.sin(-k*angle), np.cos(-k*angle)]])
+    #
+    points2[:, 0] = points[:, 0] - center[0]
+    points2[:, 1] = points[:, 1] - center[1]
+    # 
+    points2 = np.transpose(np.dot(rot_mat, np.transpose(points2[:, :2])))
+    points2[:, 0] = points2[:, 0] + center[0]
+    points2[:, 1] = points2[:, 1] + center[1]
+    rotated_points = points2.copy()
+    
+    return rotated_points
+# get the depth values from one kp to the other
+def udder_line(udder_object, udder_shp, rf_kp, lf_kp):
+    img = udder_object.img.copy().astype(float)
+    im_width =udder_object.size[1]
+    img[img ==0] = np.nan
+    kernel = Gaussian2DKernel(x_stddev=1)
+    udder_conv = convolve(img, kernel)
+    udder2 = rotate_udder(udder_conv, rf_kp, lf_kp)
+    points2 = rotate_points(rf_kp, lf_kp)
+    yloc = np.floor(points2[0,1]).astype(int)
+    # fig, ax = plt.subplots()
+    # for i in range(0,1):
+    yloc2 = yloc #  + i 
+    line = LineString([(0, yloc2), (im_width, yloc2)])
+    intersection = udder_shp.exterior.intersection(line).geoms
+    endpoints = np.array([list(intersection[0].coords[0]), list(intersection[1].coords[0])])
+    start = np.floor(endpoints[np.argmin(endpoints[:, 0])]).astype(int)
+    end = np.floor(endpoints[np.argmax(endpoints[:, 0])]).astype(int)
+    line_vals = udder2[yloc2][list(range(start[0], end[0]))]
+    x = np.array(list(range(start[0],  end[0])))
+    y = np.array([yloc]*len(x))
+    z = line_vals
+    return np.column_stack((x, y, z))
+
+# derotate points 
+def derotate_points(right_kp, left_kp, rotated_points):
+    k = get_orientation(right_kp, left_kp)
+    angle = -get_angle(right_kp, left_kp)
+    center = get_center(right_kp, left_kp)
+    rot_mat = np.array([[np.cos(-k*angle), -np.sin(-k*angle)], [np.sin(-k*angle), np.cos(-k*angle)]])
+    points = rotated_points.copy()
+    points[:, 0] = rotated_points[:, 0] - center[0]
+    points[:, 1] = rotated_points[:, 1] - center[1]
+    
+    points = np.transpose(np.dot(rot_mat, np.transpose(points[:, :2])))
+    
+    points[:, 0] = points[:, 0] + center[0]
+    points[:, 1] = points[:, 1] + center[1]
+    
+    derotated_points = np.floor(points).astype(int)
+    return derotated_points
+
+def update_kp(kp_ws, ws_label, img):
+    newkp_dict = {}
+    # fig, axs = plt.subplots(ncols = 4, nrows= 1, figsize = (12, 4))
+    for key in kp_ws.keys():
+        label = kp_ws[key]
+        mask = ws_label.copy()
+        mask[mask!= label] = 0
+        mask[mask == label] = 1
+        quarter = (mask*img).astype(float)
+        quarter[quarter==0] =np.nan
+        mins = np.argwhere(quarter== np.nanmin(quarter))
+        x = np.round(np.median(mins[:, 1]), 0).astype(int)
+        y = np.round(np.median(mins[:, 0]), 0).astype(int)
+        newkp_dict[key] = (x,y)
+    return newkp_dict

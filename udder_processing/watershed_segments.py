@@ -14,7 +14,7 @@ out_dir = r"validate_watershed\watershed_segments"
 out_dir2 = r"validate_watershed\watershed_correspondence"
 # filenames = [file.replace(".txt", ".tif") for file in os.listdir(kp_dir)]
 df = pd.read_csv(r"validate_watershed\survey_groups.csv")
-filenames = [file + ".tif" for file in df.filename]
+filenames = [file + ".tif" for file in df.filename if "1003" in file]
 
 cnt = 0
 for file in filenames:
