@@ -204,6 +204,7 @@ See udder_labels for more details **add link**
   </tr>
 </table>
 F1 score = 0.908
+
 ## Udder segmentation model
 See udder_labels for more details
 * Yolo V8 = pt model
