@@ -23,11 +23,14 @@ def area_ratio(labels):
         areas.append(area)
     return max(areas)/min(areas)
 
+# get the angle btween kp
 def get_angle(right_kp, left_kp):
     angle = np.arctan2(right_kp[1]-left_kp[1], right_kp[0]-left_kp[0])
     return angle
+# get the center between kp
 def get_center(right_kp, left_kp):
     return shapely.centroid(MultiPoint([right_kp, left_kp])).coords[0] 
+# udder orienttion in image
 def get_orientation(right_kp, left_kp):
     if right_kp[0] < left_kp[0]:
         orientation = -1 # up 
@@ -169,20 +172,7 @@ def find_correspondence(points, labels):
 
 # udder lines functions
 
-# get the angle btween kp
-def get_angle(right_kp, left_kp):
-    angle = np.arctan2(right_kp[1]-left_kp[1], right_kp[0]-left_kp[0])
-    return angle
-# get the center between kp
-def get_center(right_kp, left_kp):
-    return shapely.centroid(MultiPoint([right_kp, left_kp])).coords[0] 
-# udder orienttion in image
-def get_orientation(right_kp, left_kp):
-    if right_kp[0] < left_kp[0]:
-        orientation = -1 # up 
-    else: 
-        orientation = 1 # down
-    return orientation
+
 # rotate the udder so that kp are side by side
 def rotate_udder(udder, right_kp, left_kp):
     k = get_orientation(right_kp, left_kp)
