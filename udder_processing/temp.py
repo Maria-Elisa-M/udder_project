@@ -62,7 +62,7 @@ intr = profile.as_video_stream_profile().get_intrinsics() # Downcast to video_st
 # depth_sensor = profile.as_video_stream_profile().get_device().first_depth_sensor()
 # depth_scale = depth_sensor.get_depth_scale()
 
-for file in filenames:
+for file in filenames2:
     cow = file.split("_")[0]
     # udder object
     udder = wu.udder_object(file + ".tif", img_dir, label_dir, array = 0)
@@ -103,10 +103,13 @@ for file in filenames:
     values = udder_conv[rows, cols]*scale
     segment_points = np.column_stack((np.transpose(cols), np.transpose(rows), np.transpose(values))).astype(float)
     sgpts = points_toworld(segment_points)
-    
-    
-    X = np.column_stack((np.ones((len(sgpts), 1)), sgpts[:, :2]))
-    z = np.transpose(sgpts[:, 2])
+    #%%
+    from scipy.ndimage import gaussian_filter
+    filtered = sgpts.copy()
+    filtered[:, 2] = gaussian_filter(sgpts[:,2], 1, truncate = 2)
+  #%%  
+    X = np.column_stack((np.ones((len(sgpts), 1)), filtered[:, :2]))
+    z = np.transpose(filtered[:, 2])
     
     b = np.matrix(z).T
     A = np.matrix(X)
@@ -125,9 +128,9 @@ for file in filenames:
     plane_pcd.points = o3d.utility.Vector3dVector(plane)
     plane_pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
     
-    # o3d.visualization.draw_geometries([pcd, axes, plane_pcd])
+   # o3d.visualization.draw_geometries([pcd, plane_pcd])
     center = plane_pcd.get_center()
-
+#%%
     a = fit[1][0]
     b = fit[2][0]
     c = -1
@@ -170,4 +173,4 @@ for file in filenames:
     
     results_df = pd.concat([results_df, temp], axis= 0, ignore_index=True)
 
-results_df.to_csv("volumes_v2.csv")
+results_df.to_csv("volumes_v3.csv")
