@@ -6,7 +6,7 @@ import pandas as pd
 import pyrealsense2 as rs
 from astropy.convolution import Gaussian2DKernel, convolve,interpolate_replace_nans
 import open3d as o3d
-
+from scipy.ndimage import gaussian_filter
 from scipy.linalg import lstsq
 from scipy.spatial import Delaunay
 import math
@@ -51,7 +51,7 @@ for file in filenames:
 
 video_path =  os.path.join(os.path.normpath(dirpath + os.sep + os.pardir), r"udder_video\video_files\example_video.bag")
 
-results_df = pd.DataFrame(columns = ["cow", "filename", "volume"])
+results_df = pd.DataFrame(columns = ["cow", "filename", "volume", "lf_vol", "rf_vol", "lb_vol", "rb_vol"])
 
 config = rs.config()
 rs.config.enable_device_from_file(config, video_path, repeat_playback = False)
@@ -62,8 +62,17 @@ intr = profile.as_video_stream_profile().get_intrinsics() # Downcast to video_st
 # depth_sensor = profile.as_video_stream_profile().get_device().first_depth_sensor()
 # depth_scale = depth_sensor.get_depth_scale()
 
+# quarter assignment - according to ws_map 
+# lf - yelow (255,255,0)
+# rf - cian (0, 255, 255)
+# lb - magenta (255, 0, 255)
+# rb - white (255,255,255)
+# background - black
+color_dict = {"lf":[1,1,0], "rf": [0, 1, 1], "lb":[1, 0,1], "rb":[0.5,0.5,0.5], "bg": [0, 0, 0]}
+
 for file in filenames2:
     cow = file.split("_")[0]
+    cow_line = {"cow": cow, "filename":file, "volume":None, "lf_vol":None, "rf_vol": None, "lb_vol":None, "rb_vol":None}
     # udder object
     udder = wu.udder_object(file + ".tif", img_dir, label_dir, array = 0)
     # read image
@@ -74,7 +83,10 @@ for file in filenames2:
     # reas WS segmentation
     ws_label = np.load(os.path.join(ws_dir, file + ".npy"))
     kp_ws = pd.read_csv(os.path.join(corr_dir, file +".csv")).loc[0].to_dict()
+    ws_map = dict((v, k) for k, v in kp_ws.items())
+    ws_map[0] = "bg"
     new_kp = wu.update_kp(kp_ws, ws_label, img)
+   
     # axes = mesh_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.6, origin=[0, 0, 0])
     
     scale = 0.001
@@ -87,15 +99,11 @@ for file in filenames2:
     masked_udder =  udder.get_mask() * udder_conv 
     rows, cols = np.nonzero(masked_udder)
     values = masked_udder[rows, cols]
+    quarter_lbls = ws_label[rows, cols]
+    quarter_colors = quarter_colors = np.array([color_dict[ws_map[point]] if point in ws_map.keys() else [0,0,0]for point in quarter_lbls ])
     udder_points = np.column_stack((np.transpose(cols), np.transpose(rows), np.transpose(values))).astype(float)
     udder_points[:, 2] = udder_points[:, 2] *scale
     pts = points_toworld(udder_points)
-    
-    pcd = o3d.geometry.PointCloud()
-    pcd.points = o3d.utility.Vector3dVector(pts)
-    
-    pcd.estimate_normals(
-        search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
     
     segment = np.round([[coord[1] * udder.size[0], coord[0]* udder.size[1]] for coord in udder.get_segment()]).astype(int)
     cols = segment[:, 1]
@@ -103,10 +111,10 @@ for file in filenames2:
     values = udder_conv[rows, cols]*scale
     segment_points = np.column_stack((np.transpose(cols), np.transpose(rows), np.transpose(values))).astype(float)
     sgpts = points_toworld(segment_points)
-    #%%
-    from scipy.ndimage import gaussian_filter
+
     filtered = sgpts.copy()
     filtered[:, 2] = gaussian_filter(sgpts[:,2], 1, truncate = 2)
+    filtered[:, 2] = gaussian_filter(filtered[:,2], 1, truncate = 2)
   #%%  
     X = np.column_stack((np.ones((len(sgpts), 1)), filtered[:, :2]))
     z = np.transpose(filtered[:, 2])
@@ -118,17 +126,21 @@ for file in filenames2:
     
     predz =  fit[1] * pts[:,0] + fit[2] * pts[:,1] + fit[0]
     croped = pts.copy()
+    quarter_colors = quarter_colors[croped[:,2] <= predz[:]]
+    quarter_lbls = quarter_lbls[croped[:,2] <= predz[:]]
     croped = croped[croped[:,2] <= predz[:]]
+    
     plane = croped.copy()
     plane[:, 2] = fit[1] * croped[:,0] + fit[2] * croped[:,1] + fit[0]
     
+    pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(croped)
     pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
     plane_pcd = o3d.geometry.PointCloud()
     plane_pcd.points = o3d.utility.Vector3dVector(plane)
     plane_pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
-    
-   # o3d.visualization.draw_geometries([pcd, plane_pcd])
+    pcd.colors = o3d.utility.Vector3dVector(quarter_colors)
+    #o3d.visualization.draw_geometries([pcd, plane_pcd])
     center = plane_pcd.get_center()
 #%%
     a = fit[1][0]
@@ -145,32 +157,50 @@ for file in filenames2:
     pcd.rotate(rotation_matrix, center = center)
     plane_pcd.rotate(rotation_matrix, center = center)
     # o3d.visualization.draw_geometries([pcd, plane_pcd, axes])
- 
-    floor = np.min(np.array(plane_pcd.points)[:,2])
-    new_pts = np.array(pcd.points)
-    new_pts[:, 2] = np.array(pcd.points)[:, 2] - floor
-    new_pcd = o3d.geometry.PointCloud()
-    new_pcd.points = o3d.utility.Vector3dVector(new_pts)
-    new_pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
 
     # o3d.visualization.draw_geometries([new_pcd, axes, plane_pcd])
-
-    downpdc = new_pcd.voxel_down_sample(voxel_size=0.0001)
+    # total udder
+    downpdc = pcd.voxel_down_sample(voxel_size=0.0001)
     xyz = np.asarray(downpdc.points)
-    xyz[:, 2] = xyz[:, 2]-np.min(xyz[:, 2])
+    floor = np.min(xyz[:, 2])
+    xyz[:, 2] = xyz[:, 2]- floor
     xy_catalog = []
     for point in xyz:
         xy_catalog.append([point[0], point[1]])
     tri = Delaunay(np.array(xy_catalog))
-    
     surface = o3d.geometry.TriangleMesh()
     surface.vertices = o3d.utility.Vector3dVector(xyz)
     surface.triangles = o3d.utility.Vector3iVector(tri.simplices)
-    
-    # o3d.visualization.draw_geometries([surface], mesh_show_wireframe=True)
     volume = functools.reduce(lambda a, b:  a + volume_under_triangle(b), get_triangles_vertices(surface.triangles, surface.vertices), 0)*1000
-    temp = pd.DataFrame({"cow": cow, "filename":file, "volume":volume }, index = [0])
+    cow_line["volume"] = volume
+    #%%
+    ud_pts = np.asarray(pcd.points)
+    for key, val in ws_map.items():
+        if val in kp_ws.keys():
+            indices = np.array(np.where(quarter_lbls==key))[0]
+            qrt_pts = ud_pts[indices, :]
+            qrt_pc = o3d.geometry.PointCloud()
+            qrt_pc.points = o3d.utility.Vector3dVector(qrt_pts)
+            pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
+            # o3d.visualization.draw_geometries([qrt_pc])
+            downpdc = qrt_pc.voxel_down_sample(voxel_size=0.0001)
+            xyz = np.asarray(downpdc.points)
+            xyz[:, 2] = xyz[:, 2]- floor
+            xy_catalog = []
+            for point in xyz:
+                xy_catalog.append([point[0], point[1]])
+            tri = Delaunay(np.array(xy_catalog))
+            surface = o3d.geometry.TriangleMesh()
+            surface.vertices = o3d.utility.Vector3dVector(xyz)
+            surface.triangles = o3d.utility.Vector3iVector(tri.simplices)
+            volume = functools.reduce(lambda a, b:  a + volume_under_triangle(b), get_triangles_vertices(surface.triangles, surface.vertices), 0)*1000
+            cow_line[val+"_vol"] = volume
+  #%%  
+    # o3d.visualization.draw_geometries([surface], mesh_show_wireframe=True)
     
+    temp = pd.DataFrame(cow_line, index = [0])
     results_df = pd.concat([results_df, temp], axis= 0, ignore_index=True)
 
 results_df.to_csv("volumes_v3.csv")
+
+
