@@ -43,7 +43,7 @@ img_dir = os.path.join(os.path.normpath(dirpath + os.sep + os.pardir), r"udder_v
 filenames = [file.replace(".npy", "") for file in os.listdir(ws_dir)]
 cows = set()
 filenames2 = []
-for file in filenames:
+for file in filenames[5756:]:
     cow = file.split("_")[0]
     if cow not in cows:
         cows.add(cow)
@@ -70,7 +70,7 @@ intr = profile.as_video_stream_profile().get_intrinsics() # Downcast to video_st
 # background - black
 color_dict = {"lf":[1,1,0], "rf": [0, 1, 1], "lb":[1, 0,1], "rb":[0.5,0.5,0.5], "bg": [0, 0, 0]}
 
-for file in filenames2:
+for file in filenames:
     cow = file.split("_")[0]
     cow_line = {"cow": cow, "filename":file, "volume":None, "lf_vol":None, "rf_vol": None, "lb_vol":None, "rb_vol":None}
     # udder object
@@ -111,12 +111,14 @@ for file in filenames2:
     values = udder_conv[rows, cols]*scale
     segment_points = np.column_stack((np.transpose(cols), np.transpose(rows), np.transpose(values))).astype(float)
     sgpts = points_toworld(segment_points)
-
+# %%
     filtered = sgpts.copy()
-    filtered[:, 2] = gaussian_filter(sgpts[:,2], 1, truncate = 2)
+    med = np.mean(sgpts[:,2])
+    std = np.std(sgpts[:,2])
+    filtered = filtered[sgpts[:,2]<=med+2*std] 
     filtered[:, 2] = gaussian_filter(filtered[:,2], 1, truncate = 2)
   #%%  
-    X = np.column_stack((np.ones((len(sgpts), 1)), filtered[:, :2]))
+    X = np.column_stack((np.ones((len(filtered), 1)), filtered[:, :2]))
     z = np.transpose(filtered[:, 2])
     
     b = np.matrix(z).T
@@ -135,6 +137,7 @@ for file in filenames2:
     
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(croped)
+    # pcd.points = o3d.utility.Vector3dVector(pts)
     pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
     plane_pcd = o3d.geometry.PointCloud()
     plane_pcd.points = o3d.utility.Vector3dVector(plane)
@@ -175,32 +178,42 @@ for file in filenames2:
     cow_line["volume"] = volume
     #%%
     ud_pts = np.asarray(pcd.points)
-    for key, val in ws_map.items():
+    map_vals = np.unique(quarter_lbls)
+    keys =[k for k in ws_map.keys()]
+    map_vals = np.intersect1d(map_vals, np.array(keys))
+    for key in map_vals:
+        val = ws_map[key]
         if val in kp_ws.keys():
             indices = np.array(np.where(quarter_lbls==key))[0]
             qrt_pts = ud_pts[indices, :]
             qrt_pc = o3d.geometry.PointCloud()
             qrt_pc.points = o3d.utility.Vector3dVector(qrt_pts)
-            pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
+            qrt_pc.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
             # o3d.visualization.draw_geometries([qrt_pc])
             downpdc = qrt_pc.voxel_down_sample(voxel_size=0.0001)
             xyz = np.asarray(downpdc.points)
             xyz[:, 2] = xyz[:, 2]- floor
             xy_catalog = []
-            for point in xyz:
-                xy_catalog.append([point[0], point[1]])
-            tri = Delaunay(np.array(xy_catalog))
-            surface = o3d.geometry.TriangleMesh()
-            surface.vertices = o3d.utility.Vector3dVector(xyz)
-            surface.triangles = o3d.utility.Vector3iVector(tri.simplices)
-            volume = functools.reduce(lambda a, b:  a + volume_under_triangle(b), get_triangles_vertices(surface.triangles, surface.vertices), 0)*1000
-            cow_line[val+"_vol"] = volume
+            if len(xy_catalog)>12:
+                for point in xyz:
+                    xy_catalog.append([point[0], point[1]])
+                tri = Delaunay(np.array(xy_catalog))
+                surface = o3d.geometry.TriangleMesh()
+                surface.vertices = o3d.utility.Vector3dVector(xyz)
+                surface.triangles = o3d.utility.Vector3iVector(tri.simplices)
+                volume = functools.reduce(lambda a, b:  a + volume_under_triangle(b), get_triangles_vertices(surface.triangles, surface.vertices), 0)*1000
+                cow_line[val+"_vol"] = volume
   #%%  
     # o3d.visualization.draw_geometries([surface], mesh_show_wireframe=True)
     
     temp = pd.DataFrame(cow_line, index = [0])
     results_df = pd.concat([results_df, temp], axis= 0, ignore_index=True)
 
-results_df.to_csv("volumes_v3.csv")
+results_df.to_csv("volumes_v3_2.csv")
 
 
+#%%
+#%%
+import seaborn as sns
+
+sns.boxplot(x="cow", y="volume", data= results_df)
