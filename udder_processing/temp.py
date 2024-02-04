@@ -43,7 +43,7 @@ img_dir = os.path.join(os.path.normpath(dirpath + os.sep + os.pardir), r"udder_v
 filenames = [file.replace(".npy", "") for file in os.listdir(ws_dir)]
 cows = set()
 filenames2 = []
-for file in filenames[5756:]:
+for file in filenames: 
     cow = file.split("_")[0]
     if cow not in cows:
         cows.add(cow)
@@ -70,9 +70,9 @@ intr = profile.as_video_stream_profile().get_intrinsics() # Downcast to video_st
 # background - black
 color_dict = {"lf":[1,1,0], "rf": [0, 1, 1], "lb":[1, 0,1], "rb":[0.5,0.5,0.5], "bg": [0, 0, 0]}
 
-for file in filenames:
+for file in filenames2:
     cow = file.split("_")[0]
-    cow_line = {"cow": cow, "filename":file, "volume":None, "lf_vol":None, "rf_vol": None, "lb_vol":None, "rb_vol":None}
+    cow_line = {"cow": cow, "filename":file, "volume": np.nan, "lf_vol":np.nan, "rf_vol": np.nan, "lb_vol":np.nan, "rb_vol":np.nan}
     # udder object
     udder = wu.udder_object(file + ".tif", img_dir, label_dir, array = 0)
     # read image
@@ -105,7 +105,7 @@ for file in filenames:
     udder_points[:, 2] = udder_points[:, 2] *scale
     pts = points_toworld(udder_points)
     
-    segment = np.round([[coord[1] * udder.size[0], coord[0]* udder.size[1]] for coord in udder.get_segment()]).astype(int)
+    segment = np.round([[coord[1] * udder.size[0]-1, coord[0]* udder.size[1]-1] for coord in udder.get_segment()]).astype(int)
     cols = segment[:, 1]
     rows = segment[:, 0]
     values = udder_conv[rows, cols]*scale
@@ -163,10 +163,11 @@ for file in filenames:
 
     # o3d.visualization.draw_geometries([new_pcd, axes, plane_pcd])
     # total udder
-    downpdc = pcd.voxel_down_sample(voxel_size=0.0001)
-    xyz = np.asarray(downpdc.points)
+    # downpdc = pcd.voxel_down_sample(voxel_size=0.0001)
+
+    xyz = np.asarray(pcd.points)
     floor = np.min(xyz[:, 2])
-    xyz[:, 2] = xyz[:, 2]- floor
+    xyz[:, 2] = xyz[:, 2]-floor
     xy_catalog = []
     for point in xyz:
         xy_catalog.append([point[0], point[1]])
@@ -188,15 +189,13 @@ for file in filenames:
             qrt_pts = ud_pts[indices, :]
             qrt_pc = o3d.geometry.PointCloud()
             qrt_pc.points = o3d.utility.Vector3dVector(qrt_pts)
-            qrt_pc.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
-            # o3d.visualization.draw_geometries([qrt_pc])
-            downpdc = qrt_pc.voxel_down_sample(voxel_size=0.0001)
-            xyz = np.asarray(downpdc.points)
+            xyz = np.asarray(qrt_pc.points)
+            floor = np.min(xyz[:, 2])
             xyz[:, 2] = xyz[:, 2]- floor
             xy_catalog = []
+            for point in xyz:
+                xy_catalog.append([point[0], point[1]])
             if len(xy_catalog)>12:
-                for point in xyz:
-                    xy_catalog.append([point[0], point[1]])
                 tri = Delaunay(np.array(xy_catalog))
                 surface = o3d.geometry.TriangleMesh()
                 surface.vertices = o3d.utility.Vector3dVector(xyz)
@@ -209,7 +208,7 @@ for file in filenames:
     temp = pd.DataFrame(cow_line, index = [0])
     results_df = pd.concat([results_df, temp], axis= 0, ignore_index=True)
 
-results_df.to_csv("volumes_v3_2.csv")
+results_df.to_csv("volumes_v4.csv")
 
 
 #%%
