@@ -8,7 +8,7 @@ kp_dir = os.path.join(label_dir, r"keypoints")
 sg_dir = os.path.join(label_dir, r"segments")
 im_dir = ""
 out_dir = os.path.join(label_dir, r"watershed_segments")
-
+out_dir2 = os.path.join(label_dir, r"watershed_correspondence")
 # list of files
 inpath = "frames_tosave"
 array_path = "arrays"
@@ -39,7 +39,7 @@ for file in file_list[45:]:
                 masked_udder = udder.img*udder_mask
                 mask1 = np.zeros(udder.size)
                 points2 =np.round(points,0).astype(int)
-                
+
                 lf_kp = points[0, :2]
                 rf_kp = points[1, :2]
                 lb_kp = points[2, :2]
@@ -55,6 +55,9 @@ for file in file_list[45:]:
 
                 labels = wu.watershed_labels(points2, udder)
                 np.save(os.path.join(out_dir, out_name), labels)
-
+                
+                temp = pd.DataFrame(wu.find_correspondence(points2, labels), index = [0])
+                temp.to_csv(os.path.join(out_dir2, file.replace(".tif", ".csv")), index = False)
+                
                 print(f"{cnt}: {file}")
                 cnt +=1

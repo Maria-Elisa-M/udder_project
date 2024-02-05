@@ -1,8 +1,9 @@
 task: classify
 mode: train
 model: yolov8n-cls.pt
-data: C:\Users\marie\rep_codes\udder_project\udder_models\ws_classify\array\data
+data: /home/montesgonzal@ad.wisc.edu/udder/xception/ws_classify/ws_mask/data_all
 epochs: 100
+time: null
 patience: 50
 batch: 16
 imgsz: 864
@@ -28,6 +29,7 @@ amp: true
 fraction: 1.0
 profile: false
 freeze: null
+multi_scale: false
 overlap_mask: true
 mask_ratio: 4
 dropout: 0.0
@@ -49,6 +51,7 @@ augment: false
 agnostic_nms: false
 classes: null
 retina_masks: false
+embed: null
 show: false
 save_frames: false
 save_txt: false
@@ -94,6 +97,9 @@ fliplr: 0.5
 mosaic: 1.0
 mixup: 0.0
 copy_paste: 0.0
+auto_augment: randaugment
+erasing: 0.4
+crop_fraction: 1.0
 cfg: null
 tracker: botsort.yaml
-save_dir: runs\classify\train2
+save_dir: runs/classify/train2

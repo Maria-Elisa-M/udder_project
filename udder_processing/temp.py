@@ -40,6 +40,8 @@ label_dir = os.path.join(dirpath, r"validate_watershed\pred_labels")
 kp_dir = os.path.join(label_dir, r"keypoints")
 sg_dir = os.path.join(label_dir, r"segments")
 img_dir = os.path.join(os.path.normpath(dirpath + os.sep + os.pardir), r"udder_video\depth_images")
+results = pd.read_csv(r"validate_watershed\ws_class_predictions_I.csv")
+good = results[results.thr09 == 1]
 filenames = [file.replace(".npy", "") for file in os.listdir(ws_dir)]
 cows = set()
 filenames2 = []
@@ -70,7 +72,7 @@ intr = profile.as_video_stream_profile().get_intrinsics() # Downcast to video_st
 # background - black
 color_dict = {"lf":[1,1,0], "rf": [0, 1, 1], "lb":[1, 0,1], "rb":[0.5,0.5,0.5], "bg": [0, 0, 0]}
 
-for file in filenames2:
+for file in good.filename:
     cow = file.split("_")[0]
     cow_line = {"cow": cow, "filename":file, "volume": np.nan, "lf_vol":np.nan, "rf_vol": np.nan, "lb_vol":np.nan, "rb_vol":np.nan}
     # udder object

@@ -20,8 +20,6 @@ frame_df = pd.read_csv(os.path.join(os.path.normpath(dirpath + os.sep + os.pardi
 test_images = frame_df[frame_df.set_name == "test"].reset_index()
 
 #%% image dir
-new_dir = os.path.join(os.path.sep.join(dirpath.split(os.path.sep)[:-2]), r'udder_video\depth_images')
-old_dir = os.path.join(os.path.sep.join(dirpath.split(os.path.sep)[:-2]),  r'udder_dcc\images')
 data_dir = os.path.join(dirpath, r"masked_frame\test")
 
 clas_dict = {0:"bad", 1:"good"}
