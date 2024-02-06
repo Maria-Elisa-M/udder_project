@@ -61,4 +61,4 @@ for file in good.filename:
     temp = pd.DataFrame(cow_line, index = [0])
     results_df = pd.concat([results_df, temp], axis= 0, ignore_index=True)
 
-results_df.to_csv("region_props.csv")
+results_df.to_csv(os.path.join("udder_features", "region_props.csv"))
