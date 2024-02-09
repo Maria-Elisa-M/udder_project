@@ -24,12 +24,19 @@ results = pd.read_csv(os.path.join(label_dir, "ws_class_predictions_II.csv"))
 good = results[results.thr09 == 1]
 filenames = [file.replace(".npy", "") for file in os.listdir(ws_dir)]
 #%%
-results_df = pd.DataFrame(columns = ["cow", "filename", "udder_ecc", "lf_ecc", "rf_ecc", "lb_ecc", "rb_ecc"])
+#%%
+feature_list =  ["cow", "filename", "udder_ecc", "udder_cric", "lf_ecc", "rf_ecc", "lb_ecc", "rb_ecc", "lf_circ", "rf_circ", "lb_circ", "rb_circ"]
+results_df = pd.DataFrame(columns = feature_list)
+
+def prop_circularity(perimeter, area):
+    r = perimeter/(2*np.pi) + 0.5
+    circularity = (4*np.pi*area/perimeter*r**2)*(1 - 0.5/r)**2
+    return circularity
+#%%
 cnt = 0
 for file in good.filename:
     cow = file.split("_")[0]
-    print(f"{cow}: {cnt}")
-    cow_line = {"cow": cow, "filename":file, "udder_ecc": np.nan, "lf_ecc":np.nan, "rf_ecc": np.nan, "lb_ecc":np.nan, "rb_ecc":np.nan}
+    cow_line =dict((key, np.nan) for key in feature_list)
     # udder object
     udder = wu.udder_object(file + ".tif", img_dir, label_dir, array = 0)
     # read image
@@ -46,8 +53,11 @@ for file in good.filename:
     labels = measure.label(udd_mask)
     props = measure.regionprops(labels, img)
     udd_ecc = getattr(props[0], 'eccentricity')
+    udd_area = getattr(props[0], 'area')
+    udd_peri = getattr(props[0], 'eccentricity')
+    udd_circ = prop_circularity(udd_area, udd_peri)
     cow_line["udder_ecc"] = udd_ecc
-    
+    cow_line["udder_circ"] = udd_ecc
     # for each segment get region properties
     for key in ws_map.keys():
         val = ws_map[key] 
@@ -57,10 +67,15 @@ for file in good.filename:
         labels = measure.label(quarter_mask)
         props = measure.regionprops(labels, img)
         qt_ecc = getattr(props[0], 'eccentricity')
+        qt_area = getattr(props[0], 'area')
+        qt_peri = getattr(props[0], 'perimeter')
+        qt_circ = prop_circularity(qt_peri, qt_area)
         cow_line[val+"_ecc"] = qt_ecc
+        cow_line[val+"_circ"] = qt_circ
 #%%
-    cnt =+1
+    cnt +=1
+    print(f"{cnt}: {cow}")
     temp = pd.DataFrame(cow_line, index = [0])
     results_df = pd.concat([results_df, temp], axis= 0, ignore_index=True)
 
-results_df.to_csv(os.path.join("udder_features", "region_props_newcows.csv"))
+results_df.to_csv(os.path.join("udder_features", "region_props_newcows.csv"), index = False)
