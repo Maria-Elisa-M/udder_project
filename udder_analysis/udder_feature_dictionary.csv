@@ -1,0 +1,31 @@
+cow,cow ID
+lp_group,"p: all images on this cow were predicted, l: some images were labeled (25 segment & kp)"
+area,surface area of the udder segment mesh
+back_eu,euclidean distance between the back teats
+back_geo,geodesic distance between the back teats
+front_eu,euclidena distance between the front teats
+front_geo,geodesic distance between the front teats
+lb_area,left back surface area
+lb_circ,left back circualrity
+lb_ecc,left back eccentricity
+lb_vol,left back volume method 1
+lb_vol2,left back volume method 2
+lf_area,left front surface area
+lf_circ,left front circualrity
+lf_ecc,left front eccentricity
+lf_vol,left front volume method 1
+lf_vol2,left front volume method 2
+rb_area,right back surface area
+rb_circ,right back circualrity
+rb_ecc,right back eccentricity
+rb_vol,right back volume method 1
+rb_vol2,right back volume method 2
+rf_area,right front surface area
+rf_circ,right front circualrity
+rf_ecc,right front eccentricity
+rf_vol,right front volume method 1
+rf_vol2,right front volume method 2
+udder_circ,ciculariry of the udder segment
+udder_ecc,eccentricity of the udder segment
+volume,volume of the udder segment method 1
+volume2,volume of the udder segment method 2

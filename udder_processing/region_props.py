@@ -23,10 +23,10 @@ results = pd.read_csv(os.path.join("validate_watershed", "ws_class_predictions_I
 good = results[results.thr09 == 1]
 filenames = [file.replace(".npy", "") for file in os.listdir(ws_dir)]
 #%%
-feature_list =  ["cow", "filename", "udder_ecc", "udder_cric", "lf_ecc", "rf_ecc", "lb_ecc", "rb_ecc", "lf_circ", "rf_circ", "lb_circ", "rb_circ"]
+feature_list =  ["cow", "filename", "udder_ecc", "udder_circ", "lf_ecc", "rf_ecc", "lb_ecc", "rb_ecc", "lf_circ", "rf_circ", "lb_circ", "rb_circ"]
 results_df = pd.DataFrame(columns = feature_list)
 
-def prop_circularity(perimeter, area):
+def prop_circularity(area, perimeter):
     r = perimeter/(2*np.pi) + 0.5
     circularity = (4*np.pi*area/perimeter*r**2)*(1 - 0.5/r)**2
     return circularity
@@ -35,6 +35,8 @@ cnt = 0
 for file in good.filename:
     cow = file.split("_")[0]
     cow_line =dict((key, np.nan) for key in feature_list)
+    cow_line["cow"] = cow
+    cow_line["filename"] = file
     # udder object
     udder = wu.udder_object(file + ".tif", img_dir, label_dir, array = 0)
     # read image
@@ -50,12 +52,12 @@ for file in good.filename:
     udd_mask = udder.get_mask()
     labels = measure.label(udd_mask)
     props = measure.regionprops(labels, img)
-    udd_ecc = getattr(props[0], 'eccentricity')
+    udd_peri = getattr(props[0], 'perimeter')
     udd_area = getattr(props[0], 'area')
-    udd_peri = getattr(props[0], 'eccentricity')
+    udd_ecc = getattr(props[0], 'eccentricity')
     udd_circ = prop_circularity(udd_area, udd_peri)
     cow_line["udder_ecc"] = udd_ecc
-    cow_line["udder_circ"] = udd_ecc
+    cow_line["udder_circ"] = udd_circ
     # for each segment get region properties
     for key in ws_map.keys():
         val = ws_map[key] 

@@ -71,7 +71,7 @@ front_teats = ["rf", "lf"]
 back_teats =  ["rb", "lb"]
 
 cnt = 0
-for file in good.filename:
+for file in good.filename[:5000]:
     cow = file.split("_")[0]
     cow_line = dict((key, np.nan) for key in feature_list)
     # udder object
@@ -184,24 +184,30 @@ for file in good.filename:
     teats = [key for key in new_kp.keys()]
     
     if len(np.intersect1d(back_teats, teats)) == 2:
-        A_idx =  np.where(kp_points[:, 3]== teat_dict[back_teats[0]])[0][0]
-        B_idx =  np.where(kp_points[:, 3]== teat_dict[back_teats[1]])[0][0]
-        A = ud_pts[A_idx]
-        B = ud_pts[B_idx]
-        distance, path = geoalg.geodesicDistance(A_idx, B_idx)
-        euc_dist = np.sqrt((A[0]-B[0])**2 +(A[1]-B[1])**2 + (A[1]-B[1])**2)
-        cow_line["back_geo"] = distance
-        cow_line["back_eu"] = euc_dist
+        A_idxs =  np.where(kp_points[:, 3]== teat_dict[back_teats[0]])
+        B_idxs =  np.where(kp_points[:, 3]== teat_dict[back_teats[1]])
+        if (len(A_idxs[0]) >0) & (len(B_idxs[0]) >0):
+            A_idx = A_idxs[0][0]
+            B_idx = B_idxs[0][0]
+            A = ud_pts[A_idx]
+            B = ud_pts[B_idx]
+            distance, path = geoalg.geodesicDistance(A_idx, B_idx)
+            euc_dist = np.sqrt((A[0]-B[0])**2 +(A[1]-B[1])**2 + (A[1]-B[1])**2)
+            cow_line["back_geo"] = distance
+            cow_line["back_eu"] = euc_dist
     
     if len(np.intersect1d(front_teats, teats)) == 2:
-        A_idx =  np.where(kp_points[:, 3]== teat_dict[front_teats[0]])[0][0]
-        B_idx =  np.where(kp_points[:, 3]== teat_dict[front_teats[1]])[0][0]
-        A = ud_pts[A_idx]
-        B = ud_pts[B_idx]
-        distance, path = geoalg.geodesicDistance(A_idx, B_idx)
-        euc_dist = np.sqrt((A[0]-B[0])**2 +(A[1]-B[1])**2 + (A[1]-B[1])**2)
-        cow_line["front_geo"] = distance
-        cow_line["front_eu"] = euc_dist
+        A_idxs =  np.where(kp_points[:, 3]== teat_dict[front_teats[0]])
+        B_idxs =  np.where(kp_points[:, 3]== teat_dict[front_teats[1]])
+        if (len(A_idxs[0]) >0) & (len(B_idxs[0]) >0):
+            A_idx = A_idxs[0][0]
+            B_idx = B_idxs[0][0]
+            A = ud_pts[A_idx]
+            B = ud_pts[B_idx]
+            distance, path = geoalg.geodesicDistance(A_idx, B_idx)
+            euc_dist = np.sqrt((A[0]-B[0])**2 +(A[1]-B[1])**2 + (A[1]-B[1])**2)
+            cow_line["front_geo"] = distance
+            cow_line["front_eu"] = euc_dist
     
     map_vals = np.unique(quarter_lbls)
     keys =[k for k in ws_map.keys()]
@@ -233,4 +239,4 @@ for file in good.filename:
     temp = pd.DataFrame(cow_line, index = [0])
     results_df = pd.concat([results_df, temp], axis= 0)
 
-results_df.to_csv(os.path.join("udder_features", "geosedic_newcows.csv"), index = False)
+results_df.to_csv(os.path.join("udder_features", "geosedic_newcows_p1.csv"), index = False)
