@@ -32,7 +32,7 @@ def prop_circularity(area, perimeter):
     return circularity
 #%%
 cnt = 0
-for file in good.filename:
+for file in good.filename[:1]:
     cow = file.split("_")[0]
     cow_line =dict((key, np.nan) for key in feature_list)
     cow_line["cow"] = cow
