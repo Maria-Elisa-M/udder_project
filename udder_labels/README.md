@@ -15,8 +15,12 @@ Labeling script: <a href="udder_frame_class.py">udder_frame_class.py</a>
     <th>Bad</th>
   </tr>
   <tr>
-    <td><img src = "examples/kp_example_01.png" width = 300></th>
-    <td><img src = "examples/kp_example_07.png" width = 300></th>
+    <td><img src = "examples/good_example_01.png" width = 300></th>
+    <td><img src = "examples/bad_example_01.png" width = 300></th>
+  </tr>
+  <tr>
+    <td><img src = "examples/good_example_01.png" width = 300></th>
+    <td><img src = "examples/bad_example_02.png" width = 300></th>
   </tr>
 </table>
 
