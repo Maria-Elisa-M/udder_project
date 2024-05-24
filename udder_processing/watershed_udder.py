@@ -240,18 +240,34 @@ def derotate_points(right_kp, left_kp, rotated_points):
     derotated_points = np.floor(points).astype(int)
     return derotated_points
 
+# def update_kp(kp_ws, ws_label, img):
+#     newkp_dict = {}
+#     # fig, axs = plt.subplots(ncols = 4, nrows= 1, figsize = (12, 4))
+#     for key in kp_ws.keys():
+#         label = kp_ws[key]
+#         mask = ws_label.copy()
+#         mask[mask!= label] = 0
+#         mask[mask == label] = 1
+#         quarter = (mask*img).astype(float)
+#         quarter[quarter==0] =np.nan
+#         mins = np.argwhere(quarter== np.nanmin(quarter))
+#         x = np.round(np.median(mins[:, 1]), 0).astype(int)
+#         y = np.round(np.median(mins[:, 0]), 0).astype(int)
+#         newkp_dict[key] = (x,y)
+#     return newkp_dict
 def update_kp(kp_ws, ws_label, img):
     newkp_dict = {}
     # fig, axs = plt.subplots(ncols = 4, nrows= 1, figsize = (12, 4))
     for key in kp_ws.keys():
         label = kp_ws[key]
-        mask = ws_label.copy()
-        mask[mask!= label] = 0
-        mask[mask == label] = 1
-        quarter = (mask*img).astype(float)
-        quarter[quarter==0] =np.nan
-        mins = np.argwhere(quarter== np.nanmin(quarter))
-        x = np.round(np.median(mins[:, 1]), 0).astype(int)
-        y = np.round(np.median(mins[:, 0]), 0).astype(int)
-        newkp_dict[key] = (x,y)
+        rows, cols = np.where(ws_label == label)
+        locs = np.column_stack([np.transpose(cols), np.transpose(rows)])
+        values = img[rows, cols]
+        min = np.nanmin(values)
+        idx = np.where(values ==min)[0]
+        locs_min = locs[idx]
+        x = np.round(np.median(locs_min[:, 0]), 0).astype(int)
+        y = np.round(np.median(locs_min[:, 1]), 0).astype(int)
+        dist = np.argsort([np.linalg.norm(locs_min[i, :]-[x,y]) for i in range(len(locs_min))])
+        newkp_dict[key] = locs_min[dist][0]
     return newkp_dict

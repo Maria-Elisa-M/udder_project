@@ -102,7 +102,7 @@ for file in good.filename:
     rows, cols = np.nonzero(masked_udder)
     values = masked_udder[rows, cols]
     quarter_lbls = ws_label[rows, cols]
-    quarter_colors = quarter_colors = np.array([color_dict[ws_map[point]] if point in ws_map.keys() else [0,0,0]for point in quarter_lbls ])
+    quarter_colors = np.array([color_dict[ws_map[point]] if point in ws_map.keys() else [0,0,0]for point in quarter_lbls ])
     udder_points = np.column_stack((np.transpose(cols), np.transpose(rows), np.transpose(values))).astype(float)
     udder_points[:, 2] = udder_points[:, 2] *scale
     pts = points_toworld(udder_points)
