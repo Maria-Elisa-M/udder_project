@@ -141,6 +141,7 @@ def watershed_labels(points2, udder, dil_factor = 30, ratio_limit = 4, iter_limi
         cnt+= 1
     return labels
 
+# 05/25/2024 todo: update this label that contains no kp
 def find_correspondence(points, labels):
     lf_point = shapely.Point(points[0, :2])
     rf_point = shapely.Point(points[1, :2])
@@ -257,7 +258,16 @@ def derotate_points(right_kp, left_kp, rotated_points):
 #     return newkp_dict
 def update_kp(kp_ws, ws_label, img):
     newkp_dict = {}
-    # fig, axs = plt.subplots(ncols = 4, nrows= 1, figsize = (12, 4))
+    teat_set = set(['lb', 'rb', 'rf', 'lf'])
+    used_teats =set(kp_ws.keys())
+    nonused_teats = teat_set.difference(used_teats)
+    label_set = set(np.unique(ws_label)).difference({0})
+    used_labels = set(kp_ws.values())
+    nonused_labels = label_set.difference(used_labels)
+    if (len(nonused_labels)==1) and (len(nonused_teats) ==1):
+        nk = list(nonused_teats)[0]
+        nv = list(nonused_labels)[0]
+        kp_ws[nk] = nv
     for key in kp_ws.keys():
         label = kp_ws[key]
         rows, cols = np.where(ws_label == label)
@@ -270,4 +280,4 @@ def update_kp(kp_ws, ws_label, img):
         y = np.round(np.median(locs_min[:, 1]), 0).astype(int)
         dist = np.argsort([np.linalg.norm(locs_min[i, :]-[x,y]) for i in range(len(locs_min))])
         newkp_dict[key] = locs_min[dist][0]
-    return newkp_dict
+    return (newkp_dict, kp_ws)
