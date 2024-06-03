@@ -56,8 +56,8 @@ out_path = os.path.join(dirpath, "features_dict")
 filenames = [file.replace(".json", "") for file in os.listdir(kp_path)]
 
 # read udder and quarter point coulds
-count = 0
-for file in filenames:
+count = 2945
+for file in filenames[2945:]:
     print(count)
     count +=1
     udder_pc = np.load(os.path.join(udder_path, file + ".npy"))

@@ -55,7 +55,7 @@ for file in good.filename:
         qt_ecc = getattr(props[0], 'eccentricity')
         qt_area = getattr(props[0], 'area')
         qt_peri = getattr(props[0], 'perimeter')
-        qt_circ = prop_circularity(qt_peri, qt_area)
+        qt_circ = prop_circularity(qt_area,qt_peri)
         quarters_dict[key] = {'circ':qt_circ, 'exc':qt_ecc, 'peri':qt_peri, 'area':qt_area}
     
     shape_dict["quarters"] = quarters_dict

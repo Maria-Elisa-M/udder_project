@@ -1,0 +1,46 @@
+- create a container with an interactive job https://chtc.cs.wisc.edu/uw-research-computing/apptainer-htc
+	
+	- interactive job -> change image.def for the name of your definition file
+		=============================================================================
+		# build.sub
+		# For building an Apptainer container
+
+		universe = vanilla
+		log = build.log
+
+		# In the latest version of HTCondor on CHTC, interactive jobs require an executable.
+		# If you do not have an existing executable, use a generic linux command like hostname as shown below.
+		executable = /usr/bin/hostname
+
+		# If you have additional files in your /home directory that are required for your container, add them to the 			transfer_input_files line as a comma-separated list.
+		transfer_input_files = image.def
+
+		requirements = (HasCHTCStaging == true)
+
+		+IsBuildJob = true
+		request_cpus = 4
+		request_memory = 16GB
+		request_disk = 16GB
+
+		queue
+		=============================================================================
+	
+	- container example:
+		=============================================================================
+		Bootstrap: docker
+		From: python:3.7
+
+		%post
+			python3 -m pip install numpy pandas open3d scikit-learn
+		=============================================================================
+
+	- once the sub file and the def file are in the home directory run:
+		condor_submit -i build.sub
+		apptainer build my-container.sif image.def
+
+- test container
+
+- create job submision file
+
+
+- with conda https://chtc.cs.wisc.edu/uw-research-computing/conda-installation
