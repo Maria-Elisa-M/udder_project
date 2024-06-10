@@ -1,5 +1,6 @@
 #ignore python checkpoints
 .ipynb_checkpoints
+.virtual_documents
 */.ipynb_checkpoints/*
 
 # ignote tif files
