@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import watershed_udder as wu
+import pandas as pd
 
 dirpath = os.getcwd()
 label_dir = os.path.join(dirpath, r"pred_labels")
