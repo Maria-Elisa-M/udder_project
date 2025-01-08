@@ -6,12 +6,12 @@ import plotly.graph_objects as go
 from dash import Dash, dcc, html, Input, Output, callback,  dash_table
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
-
+import json
 
 
 # data sources
-pc_path = r"C:\Users\marie\rep_codes\udder_project\udder_processing\point_clouds"
-feature_path = r"C:\Users\marie\rep_codes\udder_project\udder_processing\features_dict"
+pc_path = r"D:\data_store\poject_data\udder_project_gpu\point_clouds"
+feature_path = r"D:\data_store\poject_data\udder_project_gpu\features_dict"
 udder_pc_path = os.path.join(pc_path, "udder")
 quarter_pc_path = os.path.join(pc_path, "quarters")
 keypoint_pc_path = os.path.join(pc_path, "keypoints")
@@ -166,6 +166,7 @@ def udder_plot(file):
     
     fig.update_layout(paper_bgcolor="black", font_color = "white", plot_bgcolor = "black")
     fig.update_scenes(xaxis_visible=False, yaxis_visible=False,zaxis_visible=False)
+    fig.update_layout(legend_font_color="white", width=1500, height=1000)
     
     return fig 
 
@@ -174,6 +175,7 @@ def blank_fig():
     fig.update_layout(paper_bgcolor="black")
     fig.update_layout(legend_font_color="white")
     fig.update_scenes(xaxis_visible=False, yaxis_visible=False,zaxis_visible=False)
+    fig.update_layout(legend_font_color="white", width=1500, height=1000)
     return fig
 
 
@@ -224,10 +226,8 @@ sidebar = html.Div(
 content = html.Div(
 [html.Div(
              [dbc.Row(
-                [dbc.Col([dcc.Graph(id='graph', figure = blank_fig())], md = 6),
-                 dbc.Col([dcc.Graph(id='graph3', figure = blank_fig())], md = 6),]),
-              dbc.Row(
-                [dbc.Col([dcc.Graph(id='graph2', figure = blank_fig())], md = 12),])])
+                [dbc.Col([dcc.Graph(id='graph', figure = blank_fig())], md = 12),]),
+              ])
 ], id="page-content", style=CONTENT_STYLE)
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
