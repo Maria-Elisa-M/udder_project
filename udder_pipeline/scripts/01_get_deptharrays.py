@@ -1,3 +1,7 @@
+# Maria Elisa Montes
+# Working version: get_frames
+# last update: 2025-02-10
+
 import os
 import sys
 import json

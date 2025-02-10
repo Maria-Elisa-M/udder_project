@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Dec 29 09:13:04 2023
+# Maria Elisa Montes
+# Working version: predict_newcows
+# last update: 2025-02-10
 
-@author: marie
-"""
 import os
 from ultralytics import YOLO
 import numpy as np
@@ -89,7 +87,7 @@ for filename in file_list:
     cow = filename.split("_")[0]
 #%%
     for j in range(0, nframes):
-        outname = "_".join(filename.split("_")[:3])+ "_frame_" + str(j) + ".txt"
+        outname = filename.replace(".npy", "") + "_frame_" + str(j) + ".txt"
         img = depth_array[j]
         imwrite("temp_img.tif", depth_array[j])
         results = model_classify("temp_img.tif")
@@ -122,7 +120,7 @@ for filename in file_list:
     len_good.append(len(good_frames))
     cows.append(cow)
     good_frames = [str(p) for p in good_frames]
-    with open(os.path.join(label_path, "frames_to_save", "_".join(filename.split("_")[:3])) + ".txt", "w") as f:
+    with open(os.path.join(label_path, "frames_to_save", filename.replace(".npy", ".txt")), "w") as f:
         f.write(",".join(good_frames))
 
 

@@ -1,25 +1,46 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Feb  4 14:29:47 2024
+# Maria Elisa Montes
+# Working version: predict_class_ws_newcows
+# last update: 2025-02-10
 
-@author: marie
-"""
 import os
 import pandas as pd
 from ultralytics import YOLO
 import numpy as np 
 from PIL import Image
+import json
+
+
 dirpath = os.getcwd()
-# model
-model_path = os.path.join(os.path.normpath(dirpath + os.sep + os.pardir), r'udder_models\ws_classify\runs\classify\train2\weights\best.pt')
-model = YOLO(model_path)
+config_path = os.path.join(dirpath, "udder_config.json")
+
+# Open and read the JSON file
+with open(config_path, 'r') as file:
+    data = json.load(file)
+
+def mk_dir(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
+# output_path 
+output_path = data["temp_path"]
+mk_dir(label_path)
+
+# model path
+model_path = data["model_path"]
+model_path_ws = os.path.join(model_path, r'ws_classify\train2\weights\best.pt')
+model = YOLO(model_path_ws)
+
+# video path
+input_path = data["temp_path"]
+label_path = os.path.join(input_path, "pred_labels")
+label_dir = os.path.join(label_path, "watershed_segments")
+corr_dir = os.path.join(label_path, "watershed_correspondence")
+
+file_list = [file.replace(".npy", "") for file in os.listdir(label_dir)]
 
 color_dict = {"lf":[1,1,0], "rf": [0, 1, 1], "lb":[1, 0,1], "rb":[1,0,0], "bg": [0, 0, 0]}
 
-label_dir = r"pred_labels\watershed_segments"
-corr_dir = r"pred_label\watershed_correspondence"
-# file_list = os.listdir(label_dir)
-file_list = [file.replace(".npy", "") for file in os.listdir(label_dir)]
 #%%
 predictions_df = pd.DataFrame()
 cnt = 0
@@ -54,4 +75,4 @@ for file in file_list:
 #%%
 cows = [file.split("_")[0] for file in predictions_df.filename]
 predictions_df["cow"] = cows
-predictions_df.to_csv("validate_watershed\ws_class_predictions_II.csv", index = False)
+predictions_df.to_csv(os.path.join(label_path, "ws_class_predictions_II.csv"), index = False)

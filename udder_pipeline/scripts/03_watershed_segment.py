@@ -1,6 +1,10 @@
+# Maria Elisa Montes
+# Working version: watershed_segments_newcows
+# last update: 2025-02-10
+
 import numpy as np
 import os
-from scripts.udder_modules import watershed_udder as wu
+from udder_modules import watershed_udder as wu
 import pandas as pd
 import json
 
@@ -28,27 +32,29 @@ mk_dir(out_dir)
 mk_dir(out_dir2)
 
 # list of files
-good_frame_path =  os.path.join(label_dir, "frames_tosave")
+good_frame_path =  os.path.join(label_dir, "frames_to_save")
 array_path = os.path.join(input_path, "arrays")
 file_list = os.listdir(array_path)
 
 # for file in list  read content
-for file in file_list[45:]:
+for file in file_list:
     cow = file.split("_")[0]
     src = os.path.join(array_path, file)
     depth_array = np.load(src, mmap_mode="r")
-    good_frames = "_".join(file.split("_")[:3]) +".txt"
+    good_frames = file.replace(".npy", ".txt")
+    # print(file)
     with open(os.path.join(good_frame_path, good_frames), "r") as f:
         frames = f.read()
         if frames != "":
             frames = [int(num) for num in frames.split(",")]
             print(f"\n{cow}: {len(frames)}")
             cnt = 1
+            # print(frames)
             for frame in frames:
-                file = "_".join(file.split("_")[:3]) +"_frame_" + str(frame) + ".tif"
+                filename = file.replace(".npy", "") +"_frame_" + str(frame)
+                # print(filename)
                 img = depth_array[frame]
-                out_name = file.replace(".tif", ".npy")
-                udder = wu.udder_object(file,im_dir, label_dir, img)
+                udder = wu.udder_object(filename, label_dir, array = img) # no im_dir bacause it is from array
                 udder_shp = udder.get_shape()
                 udder_box = udder.get_box()
                 points = udder.get_keypoints()
@@ -72,7 +78,7 @@ for file in file_list[45:]:
                 points2[3, :2] = new_back[1]
 
                 labels = wu.watershed_labels(points2, udder)
-                np.save(os.path.join(out_dir, out_name), labels)
+                np.save(os.path.join(out_dir, file + ".npy"), labels)
                 
                 temp = pd.DataFrame(wu.find_correspondence(points2, labels), index = [0])
                 temp.to_csv(os.path.join(out_dir2, file.replace(".tif", ".csv")), index = False)

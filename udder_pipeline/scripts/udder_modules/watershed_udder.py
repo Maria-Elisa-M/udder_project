@@ -58,14 +58,14 @@ def sep_points(right_kp, left_kp, udder_shp, box, limit = 10):
     return (np.floor(left_kp).astype(int), np.floor(right_kp).astype(int))
 
 class udder_object:
-    def __init__(self, file, img_dir, label_dir, array = 0):
+    def __init__(self, filename, label_dir, array = 0, img_dir = ""):
         if img_dir != "":
             cow = file.split("_")[0]
             udder = ski.io.imread(os.path.join(img_dir, cow, file))
         else:
             udder = array
         self.img = udder
-        self.label = file.replace(".tif", ".txt")
+        self.label = filename + ".txt"
         self.size = udder.shape
         self.sg_dir = os.path.join(label_dir, "segments")
         self.kp_dir =  os.path.join(label_dir, "keypoints")
