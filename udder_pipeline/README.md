@@ -2,7 +2,7 @@
 Description
 
 # Diagram
-
+<img src = "diagram\udder_flowchart.png" width = 600>
 # Input
 Description
 
