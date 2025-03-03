@@ -1,17 +1,17 @@
 # Udder pipeline 
-Description
-Goal: 
-This folder has the last running version of the scripts. 
-The working versions are under the different folders of this repository.
+Description <br/>
+Goal: <br/>
+This folder has the last running version of the scripts.  <br/>
+The working versions are under the different folders of this repository. <br/>
 
 # Diagram
 <img src = "diagram\udder_flowchart.png" width = 600>
 
 # Input
-Description
+Description <br/>
 
 # Output
-Description
+Description <br/>
 
 # Directory structure
 
@@ -35,10 +35,10 @@ udder_pipeline
 ## config file
 
 This is a json file specifyng the following paths:
-*model_path
-*input_path
-*temp_path
-*output_path
+  *model_path
+  *input_path
+  *temp_path
+  *output_path
 
 
 ## envronment
