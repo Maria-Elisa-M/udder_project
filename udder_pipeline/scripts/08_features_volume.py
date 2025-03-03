@@ -13,7 +13,6 @@ from scipy.spatial import Delaunay
 from pygeodesic import geodesic
 import napari_process_points_and_surfaces as nppas
 
-
 def mk_dir(path):
     if not os.path.exists(path):
         os.makedirs(path, exist_ok = True)
@@ -63,20 +62,24 @@ with open(config_path, 'r') as file:
 input_path = data["temp_path"]
 output_path = data["output_path"]
 label_dir = os.path.join(input_path, "pred_labels")
-pcd_path = os.path.join(label_dir, "point_clouds")
-out_path = os.path.join(output_path, "features_dict")
-
+pcd_path = os.path.join(input_path, "point_clouds")
 udder_path = os.path.join(pcd_path, "udder")
 raw_path = os.path.join(pcd_path, "raw")
 quarter_path = os.path.join(pcd_path, "quarters")
 kp_path = os.path.join(pcd_path, "keypoints")
 
+# creaater folders to save features
+out_path = os.path.join(output_path, "features_dict")
+mk_dir(out_path)
+feature_list = ["volumes", "distance", "angles"]
+for folder in feature_list:
+    mk_dir(os.path.join(out_path, folder))
 
 filenames = [file.replace(".json", "") for file in os.listdir(kp_path)]
 
 # read udder and quarter point coulds
-count = 2945
-for file in filenames[2945:]:
+count =0
+for file in filenames:
     print(count)
     count +=1
     udder_pc = np.load(os.path.join(udder_path, file + ".npy"))
@@ -129,3 +132,4 @@ for file in filenames[2945:]:
         json.dump(distance_dict, f)
     with open(os.path.join(out_path, "angles", file + ".json"), 'w') as f:
         json.dump(angle_dict, f)
+
