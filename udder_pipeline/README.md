@@ -26,7 +26,7 @@ Feature dictionaries, feature tables
     - udder_segment
 
  - scripts
-    - udder_modulees
+    - udder_modules
     - 01_get_deptharrays.py
     - 02_predict_labels.py
     - 03_watershed_segment.py
