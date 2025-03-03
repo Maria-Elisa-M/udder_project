@@ -12,6 +12,10 @@ Description <br/>
 
 # Output
 Description <br/>
+Temp output <br/>
+Labels, pointclouds, images, etc.
+Final output <br/>
+Feature dictionaries, feature tables
 
 # Directory structure
 
@@ -28,7 +32,11 @@ Description <br/>
     - 03_watershed_segment.py
     - 04_predict_class_ws.py
     - 05_write_good_frames.py
-    - 06_describe_shape.py
+    - 06_features_shape.py
+    - 07_ls_pointclouds.py
+    - 08_features_volumes.py
+
+TO - DO teat length, feature table merge
 
 # How to run
 
@@ -40,4 +48,4 @@ This is a json file specifyng the following paths:<br/>
   * output_path
 
 
-## envronment
+## environment
