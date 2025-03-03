@@ -13,7 +13,7 @@ import json
 
 def mk_dir(path):
     if not os.path.exists(path):
-        os.makedirs(path, ok_exist = True)
+        os.makedirs(path, exist_ok = True)
 
 
 def prop_circularity(area, perimeter):
@@ -36,21 +36,20 @@ kp_dir = os.path.join(label_dir, r"keypoints")
 sg_dir = os.path.join(label_dir, r"segments")
 ws_dir = os.path.join(label_dir, r"watershed_segments")
 corr_dir = os.path.join(label_dir, r"watershed_correspondence")
-results = pd.read_csv(os.path.join(label_path, "ws_class_predictions.csv"))
+results = pd.read_csv(os.path.join(label_dir, "ws_class_predictions.csv"))
 good = results[results.thr09 == 1]
 
-img_dir = os.path.join(os.path.normpath(dirpath + os.sep + os.pardir), "udder_video", "depth_images")
-
+img_dir = os.path.join(input_path, "depth_images")
 
 out_path_shape = os.path.join(output_path, "features_dict", "shape")
-
+mk_dir(out_path_shape)
 
 cnt = 0
 for file in good.filename:
-    print(cnt)
+    print(f"{file}: {cnt}")
     cnt+=1
     shape_dict = {}
-    udder = wu.udder_object(file + ".tif", img_dir, label_dir, array = 0)
+    udder = wu.udder_object(file, label_dir, array = 0, img_dir = img_dir) 
     img = udder.img
     ws_label = np.load(os.path.join(ws_dir, file + ".npy"))
     kp_ws = pd.read_csv(os.path.join(corr_dir, file +".csv")).loc[0].to_dict()

@@ -1,3 +1,7 @@
+# Maria Elisa Montes
+# Working version: watershed_segments_newcows
+# last update: 2025-03-02
+
 import os
 import numpy as np
 from tifffile import imwrite

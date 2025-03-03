@@ -60,8 +60,7 @@ def sep_points(right_kp, left_kp, udder_shp, box, limit = 10):
 class udder_object:
     def __init__(self, filename, label_dir, array = 0, img_dir = ""):
         if img_dir != "":
-            cow = file.split("_")[0]
-            udder = ski.io.imread(os.path.join(img_dir, cow, file))
+            udder = ski.io.imread(os.path.join(img_dir, filename + ".tif"))
         else:
             udder = array
         self.img = udder
