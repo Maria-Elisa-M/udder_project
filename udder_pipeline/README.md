@@ -35,8 +35,8 @@ Feature dictionaries, feature tables
     - 06_features_shape.py
     - 07_ls_pointclouds.py
     - 08_features_volumes.py
-
-TO - DO teat length, feature table merge
+    - 09_features_teat_v1.py
+    - 10_feature_table.py
 
 # How to run
 
