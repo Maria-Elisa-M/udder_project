@@ -78,10 +78,10 @@ for file in file_list:
                 points2[3, :2] = new_back[1]
 
                 labels = wu.watershed_labels(points2, udder)
-                np.save(os.path.join(out_dir, file + ".npy"), labels)
+                np.save(os.path.join(out_dir, filename + ".npy"), labels)
                 
                 temp = pd.DataFrame(wu.find_correspondence(points2, labels), index = [0])
-                temp.to_csv(os.path.join(out_dir2, file.replace(".tif", ".csv")), index = False)
+                temp.to_csv(os.path.join(out_dir2, filename + ".csv"), index = False)
                 
                 print(f"{cnt}: {file}")
                 cnt +=1
