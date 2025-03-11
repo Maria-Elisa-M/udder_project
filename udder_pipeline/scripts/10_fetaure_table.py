@@ -3,16 +3,26 @@ import json
 import pandas as pd
 import os
 
-
+# paths   
 dirpath = os.getcwd()
-feature_path = os.path.join(dirpath, "features_dict")
+config_path = os.path.join(dirpath, "udder_config.json")
+
+# Open and read the JSON file
+with open(config_path, 'r') as file:
+    data = json.load(file)
+
+
+input_path = data["output_path"]
+print(input_path)
+feature_path = os.path.join(input_path, "features_dict")
 volume_path = os.path.join(feature_path, "volumes")
 angle_path = os.path.join(feature_path, "angles")
 distance_path = os.path.join(feature_path, "distance")
 shape_path = os.path.join(feature_path, "shape")
 teat_path = os.path.join(feature_path, "teat_length")
 
-filenames = [file.replace(".json", "") for file in os.listdir(distance_path)]
+filenames = [file.replace(".json", "") for file in os.listdir(teat_path)]
+# filenames = [file.replace(".json", "") for file in os.listdir(distance_path)]
 
 sides = ['front', 'back', 'right', 'left']
 teats = ["lf", "rf", "lb", "rb"]
@@ -74,6 +84,6 @@ gddist_df.columns = [col +"_gd" for col in  gddist_df.columns]
 
 merged_df = volume_df.join(sarea_df).join(angles_df).join(eudist_df).join(gddist_df).join(shape_df).join(teat_df).reset_index().rename(columns={'index': 'filename'})
 cols = ['cow', 'frame'] +  merged_df.columns.tolist()
-merged_df[["cow", "frame"]] = [[file.split("_")[0], file.split("_")[-1]] for file in merged_df.filename]
+merged_df[["cow", "frame"]] = [["_".join(file.split("_")[:2]), file.split("_")[-1]] for file in merged_df.filename]
 merged_df = merged_df.loc[:, cols]
 merged_df.to_csv(os.path.join(feature_path, "feature_table.csv"), index = False)

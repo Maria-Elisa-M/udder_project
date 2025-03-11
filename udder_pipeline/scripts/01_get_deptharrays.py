@@ -20,13 +20,21 @@ def get_num_frames(filepath):
     nframes = int(bag.get_type_and_topic_info()[1][topic][1])
     return nframes
 
+def get_fps(filepath):
+    topic = "/device_0/sensor_0/Depth_0/image/data"
+    bag = rosbag.Bag(filepath, "r")
+    fps = int(np.round(bag.get_type_and_topic_info()[1][topic][3], 0))
+    return fps
+
+
 def get_depth_frame(filepath, filename, outpath):
-    nframes = get_num_frames(filepath) 
+    nframes = get_num_frames(filepath)
+    fps = get_fps(filepath)
     try:
         config = rs.config()
         rs.config.enable_device_from_file(config, filepath, repeat_playback = False)
         pipeline = rs.pipeline()
-        config.enable_stream(rs.stream.depth, rs.format.z16, 30)
+        config.enable_stream(rs.stream.depth, rs.format.z16, fps)
         profile = pipeline.start(config)
         playback = profile.get_device().as_playback()
         playback.set_real_time(False)

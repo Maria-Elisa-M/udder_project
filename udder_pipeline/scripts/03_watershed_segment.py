@@ -34,14 +34,14 @@ mk_dir(out_dir2)
 # list of files
 good_frame_path =  os.path.join(label_dir, "frames_to_save")
 array_path = os.path.join(input_path, "arrays")
-file_list = os.listdir(array_path)
+file_list = [file.replace(".txt", "") for file in os.listdir(good_frame_path)]
 
 # for file in list  read content
 for file in file_list:
-    cow = file.split("_")[0]
-    src = os.path.join(array_path, file)
+    cow = "_".join(file.split("_")[:2])
+    src = os.path.join(array_path, file +".npy")
     depth_array = np.load(src, mmap_mode="r")
-    good_frames = file.replace(".npy", ".txt")
+    good_frames = file + ".txt"
     # print(file)
     with open(os.path.join(good_frame_path, good_frames), "r") as f:
         frames = f.read()
@@ -51,7 +51,7 @@ for file in file_list:
             cnt = 1
             # print(frames)
             for frame in frames:
-                filename = file.replace(".npy", "") +"_frame_" + str(frame)
+                filename = file +"_frame_" + str(frame)
                 # print(filename)
                 img = depth_array[frame]
                 udder = wu.udder_object(filename, label_dir, array = img) # no im_dir bacause it is from array
