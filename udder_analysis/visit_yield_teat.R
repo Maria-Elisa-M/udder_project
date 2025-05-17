@@ -1,4 +1,5 @@
 library(dplyr)
+library(tidyr)
 library(lmerTest)
 
 # directories 
@@ -21,7 +22,7 @@ df <- df%>%mutate_at(cols2, factor)
 # drop rows with missing values
 vars = c(cols1, cols2, "lactation_number")
 dfm <- df%>%select(all_of(vars))%>%drop_na()
-
+ 
 model <- lmer(yield ~ interval_sec + vol + days_in_milk + lactation_number + sarea + area + circ + peri + exc  + teat + (1|cow),  data = dfm)
 
 summary(model)
@@ -33,3 +34,5 @@ s <- step(model)
 plot(s)
 
 summary(s)
+
+model <- lmer(yield ~ interval_sec+area * teat + (1|cow), data = dfm)
