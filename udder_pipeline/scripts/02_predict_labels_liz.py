@@ -9,6 +9,7 @@ from tifffile import imwrite
 import cv2
 import pandas as pd
 import json
+from PIL import Image
 
 dirpath = os.getcwd()
 config_path = os.path.join(dirpath, "udder_config.json")
@@ -37,7 +38,8 @@ for label_name in label_list:
 
 # model path
 model_path = data["model_path"]
-modelpath_classify = os.path.join(model_path, r"frame_classify\train\weights\best.pt")
+modelpath_classify = r"C:\Users\marie\rep_codes\udder_project\udder_pipeline\models\frame_classify\train\weights\last_liz.pt"
+# os.path.join(model_path, r"frame_classify\train\weights\best_liz.pt")
 modelpath_segment = os.path.join(model_path, r"udder_segment\train\weights\best.pt")
 modelpath_keypoints = os.path.join(model_path, r"teat_keypoints\train\weights\best.pt")
 
@@ -87,9 +89,15 @@ for filename in file_list:
     cow = "_".join(filename.split("_")[:2])
     for j in range(0, nframes):
         outname = filename.replace(".npy", "") + "_frame_" + str(j) + ".txt"
-        img = depth_array[j, :, :]
-        imwrite("temp_img.tif", depth_array[j,:, :])
-        results = model_classify("temp_img.tif")
+        img = depth_array[j]
+        imwrite("temp_img.tif", depth_array[j])
+        img_dir =  "temp_img.tif"
+        # get prediction on image
+        image_2 = np.zeros((img.shape[0], img.shape[1], 3))
+        image_2[:,:,0] = img
+        image_2[:,:,1] = img
+        image_2[:,:,2] = img
+        results = model_classify.predict(Image.open(img_dir))
         prob_array = results[0].probs.data.tolist()
         if prob_array[1] > 0.7: # for elizabeth 0.7 for Maria 0.9
             results = model_segment("temp_img.tif")
