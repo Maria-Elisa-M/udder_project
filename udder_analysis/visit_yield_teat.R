@@ -22,17 +22,25 @@ df <- df%>%mutate_at(cols2, factor)
 # drop rows with missing values
 vars = c(cols1, cols2, "lactation_number")
 dfm <- df%>%select(all_of(vars))%>%drop_na()
- 
+
+# model with individaul effects
 model <- lmer(yield ~ interval_sec + vol + days_in_milk + lactation_number + sarea + area + circ + peri + exc  + teat + (1|cow),  data = dfm)
 
 summary(model)
 
 #elimination of non-significant effects
 s <- step(model)
-
-#plot of post-hoc analysis of the final model
-plot(s)
-
 summary(s)
 
-model <- lmer(yield ~ interval_sec+area * teat + (1|cow), data = dfm)
+
+MuMIn::r.squaredGLMM(s)
+
+# model with interactions
+model <- lmer(yield ~ lactation_number + interval_sec + area * teat + (1|cow), data = dfm)
+summary(model)
+s <- step(model)
+summary(s)
+s
+MuMIn::r.squaredGLMM(s)
+
+
