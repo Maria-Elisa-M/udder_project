@@ -12,6 +12,13 @@ file_name <- "ko_ft_long_teat.csv"
 file_path <- file.path(data_dir, file_name, fsep = .Platform$file.sep)
 df <- read.csv(file_path)
 
+
+back <- back%>%mutate( kos_clas = ifelse(ko_total > 40, "40+", 
+                                         ifelse(ko_total > 20, "20-40", 
+                                                ifelse(ko_total > 10, "10-20",      
+                                                       ifelse(ko_total > 5, "5-10", "1-5")))))
+
+
 dfdim <- df%>%group_by(days_in_milk, lactation_number, animal_number)%>%
   summarise(ko = sum(ko_bin))%>%ungroup()%>%
   group_by(days_in_milk, lactation_number)%>%

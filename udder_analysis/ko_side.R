@@ -21,7 +21,14 @@ hist(ko_total$ko_total)
 
 plot(ko_total$ko_total, ko_total$eu_dist)
 
-back <- ko_total%>%filter(side == "back")
+back <- ko_total%>%filter(side == "back"& ko_total >1)
+hist(back$ko_total, breaks = 20)
+back <- back%>%mutate( kos_clas = ifelse(ko_total > 40, "40+", 
+                                         ifelse(ko_total > 20, "20-40", 
+                                                ifelse(ko_total > 10, "10-20",      
+                                                       ifelse(ko_total > 5, "5-10", "1-5")))))
+ggplot(back) + geom_boxplot(aes(eu_dist, color = kos_clas))
+back
 plot(back$ko_total ~ back$eu_dist)
 
 back <- ko_total%>%filter(side == "back" & ko_total <20)
