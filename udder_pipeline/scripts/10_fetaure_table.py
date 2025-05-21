@@ -84,6 +84,6 @@ gddist_df.columns = [col +"_gd" for col in  gddist_df.columns]
 
 merged_df = volume_df.join(sarea_df).join(eudist_df).join(gddist_df).join(shape_df).join(teat_df).reset_index().rename(columns={'index': 'filename'})
 cols = ['cow', 'frame'] +  merged_df.columns.tolist()
-merged_df[["cow", "frame"]] = [["_".join(file.split("_")[:2]), file.split("_")[-1]] for file in merged_df.filename]
+merged_df[["cow", "frame"]] = [[file.split("_")[0], file.split("_")[-1]] for file in merged_df.filename]
 merged_df = merged_df.loc[:, cols]
 merged_df.to_csv(os.path.join(feature_path, "feature_table.csv"), index = False)
