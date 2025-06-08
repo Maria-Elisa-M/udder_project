@@ -6,7 +6,7 @@ import numpy as np
 import shutil
 
 data_path =  r'C:\Users\marie\rep_codes\udder_project\udder_processing\validate_watershed\watershed_data\masked_frame'
-working_path = r"C:\Users\marie\rep_codes\udder_project\udder_models\ws_classify"
+working_path = r"C:\Users\marie\rep_codes\udder_project\udder_models\ws_classify\leave_one_out"
 df = pd.read_csv(r"C:\Users\marie\rep_codes\udder_project\udder_processing\validate_watershed\survey_results.csv")
 cow_list = np.unique(df.cow)
 dataset_path_src = os.path.join(working_path, "dataset")
@@ -40,13 +40,12 @@ for i, cow in enumerate(cow_list[:1]):
     test_files = df[df.cow == cow].reset_index(drop = True)
     train_files = df[df.cow != cow].reset_index(drop = True)
     # move files to dataset location
-    create_dataset(train_files, test_files, dataset_path, data_path)
+    create_dataset(train_files, test_files, dataset_path_src, data_path)
 
     # remove file from the training set
     model = YOLO('yolov8n-cls.pt')  # load a pretrained model (recommended for training)
       
     #Train the model
-    
     model.train(data=dataset_path_src, epochs=100, imgsz=864, degrees = 180, scale = 0.5)
     
     # reaname directories
