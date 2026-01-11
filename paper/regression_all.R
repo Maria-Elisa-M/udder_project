@@ -52,24 +52,32 @@ qqnorm(resid)
 
 # save the coeffients in a table
 coef_yield <- data.frame(coef(summary(as(model_yield,"lmerModLmerTest")))[, 1])
+serror_yield <- data.frame(coef(summary(as(model_yield,"lmerModLmerTest")))[, 2])
 pv_yield <- data.frame(coef(summary(as(model_yield,"lmerModLmerTest")))[, 5])
 colnames(coef_yield) <- "yield"
 colnames(pv_yield) <- "yield"
+colnames(serror_yield) <- "yield"
 
 coef_pf <- data.frame(coef(summary(as(model_pf,"lmerModLmerTest")))[, 1])
+serror_pf <- data.frame(coef(summary(as(model_pf,"lmerModLmerTest")))[, 2])
 pv_pf <- data.frame(coef(summary(as(model_pf,"lmerModLmerTest")))[, 5])
 colnames(coef_pf) <- "peak_flow"
 colnames(pv_pf) <- "peak_flow"
+colnames(serror_pf) <- "peak_flow"
 
 coef_ec <- data.frame(coef(summary(as(model_ec,"lmerModLmerTest")))[, 1])
+serror_ec <- data.frame(coef(summary(as(model_ec,"lmerModLmerTest")))[, 2])
 pv_ec <- data.frame(coef(summary(as(model_ec,"lmerModLmerTest")))[, 5])
 colnames(coef_ec) <- "conductivity"
 colnames(pv_ec) <- "conductivity"
+colnames(serror_ec) <- "conductivity"
 
 coef_mf <- data.frame(coef(summary(as(model_mf,"lmerModLmerTest")))[, 1])
+serror_mf <- data.frame(coef(summary(as(model_mf,"lmerModLmerTest")))[, 2])
 pv_mf <- data.frame(coef(summary(as(model_mf,"lmerModLmerTest")))[, 5])
 colnames(coef_mf) <- "mean_flow"
 colnames(pv_mf) <- "mean_flow"
+colnames(serror_mf) <- "mean_flow"
 
 merged_coef <- merge(coef_yield, coef_ec, by = 0, all=TRUE)
 merged_coef <- merge(merged_coef, coef_mf, by.x = 'Row.names', by.y = 0, all=TRUE)
@@ -81,7 +89,11 @@ merged_pv <- merge(merged_pv, pv_mf, by.x = 'Row.names', by.y = 0, all=TRUE)
 merged_pv <- merge(merged_pv, pv_pf, by.x = 'Row.names', by.y = 0, all=TRUE)
 merged_pv[, 2:5] <- round(merged_pv[, 2:5], 3)
 
+merged_error <- merge(serror_yield, serror_ec, by = 0, all=TRUE)
+merged_error <- merge(merged_error, serror_mf, by.x = 'Row.names', by.y = 0, all=TRUE)
+merged_error <- merge(merged_error, serror_mf, by.x = 'Row.names', by.y = 0, all=TRUE)
+merged_error[, 2:5] <- round(merged_error[, 2:5], 3)
 
 write.csv(merged_coef, "C:\\Users\\marie\\rep_codes\\udder_project\\paper\\tables\\merged_coef.csv", row.names = FALSE)
 write.csv(merged_pv, "C:\\Users\\marie\\rep_codes\\udder_project\\paper\\tables\\merged_pv.csv", row.names = FALSE)
-
+write.csv(merged_error, "C:\\Users\\marie\\rep_codes\\udder_project\\paper\\tables\\merged_error.csv", row.names = FALSE)
