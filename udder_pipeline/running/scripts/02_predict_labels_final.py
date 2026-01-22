@@ -1,7 +1,14 @@
 # Maria Elisa Montes
 # Working version: predict_newcows
 # last update: 2025-02-10
-
+import os
+from ultralytics import YOLO
+import numpy as np
+from tifffile import imwrite
+import cv2
+import pandas as pd
+import json
+import sys
 def mk_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
@@ -38,14 +45,6 @@ def is_not_dup(arr):
     return not (c>1).any()
 
 def main():
-    import os
-    from ultralytics import YOLO
-    import numpy as np
-    from tifffile import imwrite
-    import cv2
-    import pandas as pd
-    import json
-    import sys
 
     if len(sys.argv) > 1 :
         config_file = sys.argv[1]    

@@ -28,8 +28,9 @@ distance_path = os.path.join(feature_path, "distance")
 shape_path = os.path.join(feature_path, "shape")
 teat_path = os.path.join(feature_path, "teat_length")
 
-filenames = [file.replace(".json", "") for file in os.listdir(teat_path)]
-# filenames = [file.replace(".json", "") for file in os.listdir(distance_path)]
+file_set = set(os.listdir(shape_path))
+filenames = [file.replace(".json", "") for file in os.listdir(teat_path) if file in file_set]
+
 
 sides = ['front', 'back', 'right', 'left']
 teats = ["lf", "rf", "lb", "rb"]

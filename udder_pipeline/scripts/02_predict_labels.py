@@ -22,7 +22,7 @@ def mk_dir(path):
         os.makedirs(path)
 
 # video path
-input_path = data["temp_path"]
+input_path = data["input_path"]
 array_path = os.path.join(input_path, "arrays")
 file_list = os.listdir(array_path)
 
@@ -80,6 +80,7 @@ def is_not_dup(arr):
 #%%
 cows = []
 len_good = []
+print(array_path)
 for filename in file_list:        
     good_frames = []
     depth_array = np.load(os.path.join(array_path, filename), mmap_mode="r")
@@ -92,7 +93,7 @@ for filename in file_list:
         results = model_classify("temp_img.tif")
         prob_array = results[0].probs.data.tolist()
         if prob_array[1] > 0.7: # for elizabeth 0.7 for Maria 0.9
-            results = model_segment("temp_img.tif")
+            results = model_segment.predict("temp_img.tif")
             if (len(results) > 0) & (results[0].masks is not None):
                 polyn = (results[0].masks[0].xyn[0]).tolist()
                 poly = (results[0].masks[0].xy[0]).tolist()
