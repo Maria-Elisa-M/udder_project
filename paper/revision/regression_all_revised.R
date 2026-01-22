@@ -12,14 +12,15 @@ file_name <- "visit_ft_long.csv"
 file_path <- file.path(data_dir, file_name, fsep = .Platform$file.sep)
 df <- read.csv(file_path)
 df <- df%>%mutate(parity = ifelse(lactation_number > 1, 1, 0), 
-                  location = ifelse((teat == "lf")|(teat == "rf"), "front", "rear"))
+                  location = ifelse((teat == "lf")|(teat == "rf"), "front", "rear"), 
+                  side = ifelse((teat == "lf")|(teat == "lr"), "left", "right"))
 
 # center and standardize values
 cols1 <- c("yield", "interval_sec", "vol", "days_in_milk",  "sarea", "area", "circ", "exc", "peri", "conductivity", "peak_flow", "mean_flow", "len")
 df[cols1] <- scale(df[cols1])
 
 # set as factors
-cols2 <- c("cow", "teat", "parity", "location")
+cols2 <- c("cow", "teat", "parity", "location", "side")
 df <- df%>%mutate_at(cols2, factor)
 
 # drop rows with missing values
@@ -27,25 +28,25 @@ vars = c(cols1, cols2)
 dfm <- df%>%select(all_of(vars))%>%drop_na()
 
 # visit quarter yield
-model_yield <- lmer(yield ~ interval_sec + len + area + days_in_milk + parity + circ + exc + location + (1|cow),  data = dfm)
+model_yield <- lmer(yield ~ interval_sec + len + area + days_in_milk + parity + circ + exc + location + side + (1|cow),  data = dfm)
 summary(model_yield)
 resid <- residuals(model_yield)
 qqnorm(resid)
 
 # visit quarter electical conductivity
-model_ec <- lmer(conductivity ~ yield + interval_sec + len + area + days_in_milk + parity + circ + exc + location + (1|cow),  data = dfm)
+model_ec <- lmer(conductivity ~ yield + interval_sec + len + area + days_in_milk + parity + circ + exc + location + side +(1|cow),  data = dfm)
 summary(model_ec)
 resid <- residuals(model_ec)
 qqnorm(resid)
 
 # model quarter peak flow
-model_pf <- lmer(peak_flow ~ yield + interval_sec + len + area + days_in_milk + parity + circ + exc + location + (1|cow),  data = dfm)
+model_pf <- lmer(peak_flow ~ yield + interval_sec + len + area + days_in_milk + parity + circ + exc + location + side + (1|cow),  data = dfm)
 summary(model_pf)
 resid <- residuals(model_pf)
 qqnorm(resid)
 
 # model quarter mean flow
-model_mf <- lmer(mean_flow ~ yield + interval_sec +len+ area + days_in_milk + parity + circ + exc + location + (1|cow),  data = dfm)
+model_mf <- lmer(mean_flow ~ yield + interval_sec +len+ area + days_in_milk + parity + circ + exc + location + side + (1|cow),  data = dfm)
 summary(model_mf)
 resid <- residuals(model_mf)
 qqnorm(resid)
@@ -82,17 +83,17 @@ colnames(serror_mf) <- "mean_flow"
 merged_coef <- merge(coef_yield, coef_ec, by = 0, all=TRUE)
 merged_coef <- merge(merged_coef, coef_mf, by.x = 'Row.names', by.y = 0, all=TRUE)
 merged_coef <- merge(merged_coef, coef_pf, by.x = 'Row.names', by.y = 0, all=TRUE)
-merged_coef[, 2:5] <- round(merged_coef[, 2:5], 3)
+merged_coef[, 2:5] <- round(merged_coef[, 2:5], 2)
 
 merged_pv <- merge(pv_yield, pv_ec, by = 0, all=TRUE)
 merged_pv <- merge(merged_pv, pv_mf, by.x = 'Row.names', by.y = 0, all=TRUE)
 merged_pv <- merge(merged_pv, pv_pf, by.x = 'Row.names', by.y = 0, all=TRUE)
-merged_pv[, 2:5] <- round(merged_pv[, 2:5], 3)
+merged_pv[, 2:5] <- round(merged_pv[, 2:5], 2)
 
 merged_error <- merge(serror_yield, serror_ec, by = 0, all=TRUE)
 merged_error <- merge(merged_error, serror_mf, by.x = 'Row.names', by.y = 0, all=TRUE)
 merged_error <- merge(merged_error, serror_mf, by.x = 'Row.names', by.y = 0, all=TRUE)
-merged_error[, 2:5] <- round(merged_error[, 2:5], 3)
+merged_error[, 2:5] <- round(merged_error[, 2:5], 2)
 
 write.csv(merged_coef, "C:\\Users\\marie\\rep_codes\\udder_project\\paper\\revision\\tables\\merged_coef.csv", row.names = FALSE)
 write.csv(merged_pv, "C:\\Users\\marie\\rep_codes\\udder_project\\paper\\revision\\tables\\merged_pv.csv", row.names = FALSE)

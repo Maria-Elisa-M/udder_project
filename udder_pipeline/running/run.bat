@@ -1,7 +1,3 @@
-call activate udder
-python scripts\02_predict_labels_final.py udder_config.json
-call conda deactivate
-
 call activate env-udder-03
 python scripts\03_watershed_segment_final.py udder_config.json
 call conda deactivate
