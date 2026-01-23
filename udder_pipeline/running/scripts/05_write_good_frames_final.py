@@ -42,4 +42,5 @@ for file in good.filename:
     frame_name= file + ".tif"
     src = os.path.join(array_path, array_name)
     depth_array = np.load(src, mmap_mode="r")
-    imwrite(os.path.join(depthpath, frame_name), depth_array[frame])
+    if frame <= len(depth_array)-1:
+        imwrite(os.path.join(depthpath, frame_name), depth_array[frame])
