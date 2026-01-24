@@ -29,7 +29,11 @@ shape_path = os.path.join(feature_path, "shape")
 teat_path = os.path.join(feature_path, "teat_length")
 
 file_set = set(os.listdir(shape_path))
+cow_set = np.unique([file.split("_")[0] for file in os.listdir(shape_path)])
+print(len(cow_set))
 filenames = [file.replace(".json", "") for file in os.listdir(teat_path) if file in file_set]
+print(len(filenames))
+# filenames = [file.replace(".json", "") for file in os.listdir(teat_path)]
 
 
 sides = ['front', 'back', 'right', 'left']
