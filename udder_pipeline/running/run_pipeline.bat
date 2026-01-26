@@ -1,4 +1,3 @@
-
 call activate env-udder-00
 python scripts\01_getdeptharrays_final.py udder_config.json
 call conda deactivate

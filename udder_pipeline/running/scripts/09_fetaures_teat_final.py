@@ -52,7 +52,7 @@ kernel = 1.0 * RBF(length_scale=1.0, length_scale_bounds=(1e-5, 1e2))  + WhiteKe
 
 skip_files = []
 cnt = 0
-for file in filenames:
+for file in filenames[:150]:
     print(cnt)
     cnt+=1
     
